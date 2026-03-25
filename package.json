@@ -2,7 +2,7 @@
   "name": "termproject",
   "version": "1.0.0",
   "description": "<div align=\"center\">\r   <em>Banner image will be added here later.</em>\r   <h1>(Project Name)</h1>\r   <p>(Brief Description of the Project)</p>\r </div>",
-  "main": "script.js",
+  "main": "backend/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
