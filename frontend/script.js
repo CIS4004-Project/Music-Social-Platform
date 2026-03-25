@@ -1,6 +1,7 @@
 // --- UI & ANIMATION LOGIC ---
 const title = document.getElementById('site-title');
 const mainContent = document.getElementById('main-content');
+const homeContent = document.getElementById('home-content');
 
 let fillPercentage = 0;
 const totalNotesToFill = 15;
@@ -100,7 +101,6 @@ function switchTab(tab) {
     const tabLogin = document.getElementById('tab-login');
     const tabSignup = document.getElementById('tab-signup');
 
-    // Clear any messages when switching
     document.getElementById('login-message').textContent = '';
     document.getElementById('signup-message').textContent = '';
 
@@ -121,7 +121,15 @@ function switchTab(tab) {
 function showMessage(elementId, message, type) {
     const el = document.getElementById(elementId);
     el.textContent = message;
-    el.className = `form-message ${type}`; // 'error' or 'success'
+    el.className = `form-message ${type}`;
+}
+
+// --- SHOW HOME CONTENT AFTER LOGIN ---
+function showHome() {
+    mainContent.classList.remove('visible');
+    mainContent.classList.add('hidden');
+    homeContent.classList.remove('hidden');
+    homeContent.classList.add('visible');
 }
 
 // --- LOGIN LOGIC ---
@@ -144,9 +152,9 @@ if (loginForm) {
             const data = await res.json();
 
             if (res.ok) {
-                showMessage('login-message', '✓ Logged in! Redirecting...', 'success');
+                showMessage('login-message', '✓ Logged in!', 'success');
                 setTimeout(() => {
-                    window.location.href = 'home.html'; // redirect after login
+                    showHome(); // Show the home/search section after login
                 }, 1000);
             } else {
                 showMessage('login-message', data.message || 'Login failed.', 'error');
@@ -167,7 +175,6 @@ if (signupForm) {
         const password = document.getElementById('signup-password').value;
         const confirm = document.getElementById('signup-confirm').value;
 
-        // Check passwords match before sending to server
         if (password !== confirm) {
             showMessage('signup-message', 'Passwords do not match.', 'error');
             return;
@@ -186,7 +193,7 @@ if (signupForm) {
             if (res.ok) {
                 showMessage('signup-message', '✓ Account created! You can now log in.', 'success');
                 setTimeout(() => {
-                    switchTab('login'); // Switch to login tab after signup
+                    switchTab('login');
                 }, 1500);
             } else {
                 showMessage('signup-message', data.message || 'Signup failed.', 'error');
@@ -194,5 +201,51 @@ if (signupForm) {
         } catch (err) {
             showMessage('signup-message', 'Could not connect to server.', 'error');
         }
+    });
+}
+
+// --- ITUNES SEARCH LOGIC ---
+async function searchMusic() {
+    const term = document.getElementById('search').value.trim();
+    if (!term) return;
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<p>Searching...</p>';
+
+    try {
+        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=5`);
+        const data = await res.json();
+
+        resultsDiv.innerHTML = '';
+
+        if (data.results.length === 0) {
+            resultsDiv.innerHTML = '<p>No songs found.</p>';
+            return;
+        }
+
+        data.results.forEach(song => {
+            const div = document.createElement('div');
+            div.classList.add('song-card');
+            div.innerHTML = `
+                <img src="${song.artworkUrl100}" alt="${song.trackName}">
+                <div class="song-info">
+                    <p class="song-title">${song.trackName}</p>
+                    <p class="song-artist">${song.artistName}</p>
+                    <audio controls src="${song.previewUrl}"></audio>
+                </div>
+            `;
+            resultsDiv.appendChild(div);
+        });
+
+    } catch (err) {
+        resultsDiv.innerHTML = '<p>Could not fetch songs. Try again.</p>';
+    }
+}
+
+// Allow pressing Enter to search
+const searchInput = document.getElementById('search');
+if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') searchMusic();
     });
 }

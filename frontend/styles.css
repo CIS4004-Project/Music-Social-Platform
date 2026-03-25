@@ -20,21 +20,15 @@ body {
 }
 
 @keyframes fall {
-  0% {
-    transform: translateY(0) rotate(-15deg);
-  }
-  100% {
-    transform: translateY(115vh) rotate(15deg);
-  }
+  0% { transform: translateY(0) rotate(-15deg); }
+  100% { transform: translateY(115vh) rotate(15deg); }
 }
 
 /* --- 3. SPLASH SCREEN & TITLE STYLES --- */
 #splash-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -46,13 +40,9 @@ body {
   font-size: 5rem;
   margin: 0;
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  transition:
-    top 1.5s ease-in-out,
-    font-size 1.5s ease-in-out,
-    filter 0.5s ease-in-out;
+  transition: top 1.5s ease-in-out, font-size 1.5s ease-in-out, filter 0.5s ease-in-out;
   white-space: nowrap;
   background: linear-gradient(
     to top,
@@ -82,22 +72,12 @@ body {
 }
 
 @keyframes absorb {
-  0% {
-    opacity: 1;
-    filter: brightness(1) blur(0px);
-  }
-  40% {
-    opacity: 1;
-    filter: brightness(2) blur(2px) contrast(200%);
-  }
-  100% {
-    opacity: 0;
-    filter: brightness(3) blur(6px);
-    transform: scale(0);
-  }
+  0% { opacity: 1; filter: brightness(1) blur(0px); }
+  40% { opacity: 1; filter: brightness(2) blur(2px) contrast(200%); }
+  100% { opacity: 0; filter: brightness(3) blur(6px); transform: scale(0); }
 }
 
-/* --- 4. MAIN CONTENT STYLES --- */
+/* --- 4. SHARED CONTENT STYLES --- */
 .hidden {
   opacity: 0;
   pointer-events: none;
@@ -157,16 +137,13 @@ body {
   align-items: center;
   gap: 16px;
   margin-top: 0;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .hidden-form {
   display: none;
 }
 
-/* Glassy Input Boxes */
 .auth-form input {
   padding: 15px 20px;
   font-size: 1.1rem;
@@ -191,7 +168,6 @@ body {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Auth Button */
 .auth-btn {
   padding: 15px 30px;
   font-size: 1.1rem;
@@ -214,7 +190,6 @@ body {
   box-shadow: 0 8px 20px rgba(138, 43, 226, 0.6);
 }
 
-/* --- 7. FORM MESSAGE (errors/success) --- */
 .form-message {
   font-size: 0.9rem;
   margin: 0;
@@ -222,10 +197,125 @@ body {
   transition: all 0.3s ease;
 }
 
-.form-message.error {
-  color: #ff6b6b;
+.form-message.error { color: #ff6b6b; }
+.form-message.success { color: #6bffb8; }
+
+/* --- 7. HOME / SEARCH STYLES --- */
+#home-content {
+  padding-top: 120px;
+  text-align: center;
+  z-index: 5;
+  position: relative;
 }
 
-.form-message.success {
-  color: #6bffb8;
+#search-section {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+#search-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: hsl(265, 100%, 75%);
+}
+
+#search-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+#search-bar input {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid hsl(265, 40%, 30%);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+#search-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+#search-bar input:focus {
+  border-color: hsl(265, 100%, 60%);
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+}
+
+#search-bar button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(45deg, hsl(265, 100%, 35%), hsl(265, 100%, 55%));
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+#search-bar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(138, 43, 226, 0.5);
+}
+
+/* --- 8. SONG CARD STYLES --- */
+#results {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.song-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid hsl(265, 40%, 25%);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.song-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: hsl(265, 100%, 50%);
+  box-shadow: 0 4px 20px rgba(138, 43, 226, 0.3);
+}
+
+.song-card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.song-info {
+  flex: 1;
+}
+
+.song-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+  color: white;
+}
+
+.song-artist {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0 0 10px 0;
+}
+
+.song-card audio {
+  width: 100%;
+  height: 32px;
+  accent-color: hsl(265, 100%, 60%);
 }

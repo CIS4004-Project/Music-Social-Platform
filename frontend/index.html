@@ -7,104 +7,54 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+
+    <!-- SPLASH SCREEN -->
     <div id="splash-container">
       <h1 id="site-title" style="--fill-percent: 0%">
         Chi&#9833;&#9833; Sounds
       </h1>
     </div>
 
+    <!-- AUTH CONTENT (shown after splash) -->
     <div id="main-content" class="hidden">
+
       <!-- Tab Toggle -->
       <div id="form-tabs">
-        <button
-          class="tab-btn active"
-          id="tab-login"
-          onclick="switchTab('login')"
-        >
-          Log In
-        </button>
-        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">
-          Sign Up
-        </button>
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Log In</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
       </div>
 
       <!-- Login Form -->
       <form id="login-form" class="auth-form">
-        <input
-          type="text"
-          id="login-username"
-          placeholder="Username"
-          required
-          autocomplete="off"
-        />
-        <input
-          type="password"
-          id="login-password"
-          placeholder="Password"
-          required
-        />
+        <input type="text" id="login-username" placeholder="Username" required autocomplete="off" />
+        <input type="password" id="login-password" placeholder="Password" required />
         <button type="submit" class="auth-btn">Log In</button>
         <p class="form-message" id="login-message"></p>
       </form>
 
       <!-- Signup Form -->
       <form id="signup-form" class="auth-form hidden-form">
-        <input
-          type="text"
-          id="signup-username"
-          placeholder="Username"
-          required
-          autocomplete="off"
-        />
-        <input
-          type="password"
-          id="signup-password"
-          placeholder="Password"
-          required
-        />
-        <input
-          type="password"
-          id="signup-confirm"
-          placeholder="Confirm Password"
-          required
-        />
+        <input type="text" id="signup-username" placeholder="Username" required autocomplete="off" />
+        <input type="password" id="signup-password" placeholder="Password" required />
+        <input type="password" id="signup-confirm" placeholder="Confirm Password" required />
         <button type="submit" class="auth-btn">Create Account</button>
         <p class="form-message" id="signup-message"></p>
       </form>
+
+    </div>
+
+    <!-- HOME CONTENT (shown after login) -->
+    <div id="home-content" class="hidden">
+      <div id="search-section">
+        <h2>Search Music</h2>
+        <div id="search-bar">
+          <input type="text" id="search" placeholder="Search for songs..." />
+          <button onclick="searchMusic()">Search</button>
+        </div>
+        <div id="results"></div>
+      </div>
     </div>
 
     <script src="script.js"></script>
-
-    <h2>Search Music</h2>
-<input type="text" id="search" placeholder="Search for songs...">
-<button onclick="searchMusic()">Search</button>
-
-<div id="results"></div>
-
-<script>
-async function searchMusic() {
-  const term = document.getElementById("search").value;
-  const res = await fetch(`https://itunes.apple.com/search?term=${term}&entity=song&limit=5`);
-  const data = await res.json();
-
-  const resultsDiv = document.getElementById("results");
-  resultsDiv.innerHTML = "";
-
-  data.results.forEach(song => {
-    const div = document.createElement("div");
-
-    div.innerHTML = `
-      <p><strong>${song.trackName}</strong> - ${song.artistName}</p>
-      <img src="${song.artworkUrl100}">
-      <br>
-      <audio controls src="${song.previewUrl}"></audio>
-      <hr>
-    `;
-
-    resultsDiv.appendChild(div);
-  });
-}
-</script>
-    
   </body>
 </html>

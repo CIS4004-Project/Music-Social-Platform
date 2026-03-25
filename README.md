@@ -1,5 +1,4 @@
 <div align="center">
-  <em>Banner image will be added here later.</em>
   <h1>Music-Social-Platform</h1>
   <p>(Brief Description of the Project)</p>
 </div>
@@ -46,8 +45,8 @@ Both should print version numbers.
 **1. Clone the repository:**
 
 ```bash
-git clone https://github.com/Devaloupe/TermProject.git
-cd TermProject
+git clone https://github.com/Devaloupe/Music-Social-Platform.git
+cd Music-Social-Platform
 ```
 
 **2. Install dependencies:**
@@ -56,13 +55,15 @@ cd TermProject
 npm install
 ```
 
-**3. Create a `.env` file** in the root of the project folder:
+**3. Create a `.env` file** in the root of the project folder
 
 ```
 PORT=3000
-***THIS IS WHERE I WILL GIVE YOU THE CONNECTION STRING***
+MONGO_URI=mongodb+srv://LomoSaltado1516:Lomo1516@music-website.43gtilk.mongodb.net/music-website?appName=music-website
 SESSION_SECRET=musicwebsitesecretkey123
 ```
+
+> The `.env` file is never pushed to GitHub for security reasons. You must create it manually on every device you work on.
 
 ---
 
@@ -85,25 +86,9 @@ To stop the server press `Ctrl + C`.
 
 ### Running the Frontend
 
-Open `frontend/index.html` using **VS Code Live Server** (port 5500) or just open the file directly in your browser.
+Open `frontend/index.html` using **VS Code Live Server** or open it directly in your browser.
 
----
-
-### Every Time You Work On The Project
-
-Always pull the latest changes before starting:
-
-```bash
-git pull
-```
-
-And push your changes when you're done:
-
-```bash
-git add .
-git commit -m "describe what you changed"
-git push
-```
+> Make sure the server is running before testing login or signup — otherwise you'll get a "Could not connect to server" error.
 
 ---
 
