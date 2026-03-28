@@ -70,24 +70,28 @@ function addToPlaylist(buttonID){
   const newDiv = document.createElement('div');
   //newDiv.classlist.add('song-card');
   newDiv.id = songID;
+  console.log("created " + newDiv.id);
   newDiv.innerHTML = currentSearchedSongs[index].innerHTML.slice(0,547);
   
   let deleteButton = document.createElement('button');
   deleteButton.innerHTML = "Delete";
   deleteButton.id = deleteID;
+  //deleteButton.setAttribute("onClick", "deleteSong(songID)");
+  //deleteButton.setAttribute("onClick", "deleteSong()");
+  //deleteButton.addEventListener("click", deleteSong.bind(null,newDiv.id));
   console.log("created " + deleteButton.id);
   newDiv.appendChild(deleteButton);
   
-  console.log(newDiv);
+  //console.log(newDiv);
   //newDiv.innerHTML = currentSearchedSongs[index];
   queue.appendChild(newDiv);
   counter++;
   deleteButton.addEventListener("click", deleteSong.bind(null,songID));
+  
 }
 
-function deleteSong(songID){
+function deleteSong(currentSongID){
   console.log("delete button clicked for " + currentSongID);
   const currentSong = document.getElementById(currentSongID);
   currentSong.remove();
-  
 }
