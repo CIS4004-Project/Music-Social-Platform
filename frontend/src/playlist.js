@@ -75,8 +75,6 @@ function addToPlaylist(buttonID){
   let deleteButton = document.createElement('button');
   deleteButton.innerHTML = "Delete";
   deleteButton.id = deleteID;
-  deleteButton.setAttribute("onClick", "deleteSong(songID)");
-  //deleteButton.addEventListener("click", deleteSong);
   console.log("created " + deleteButton.id);
   newDiv.appendChild(deleteButton);
   
@@ -84,10 +82,12 @@ function addToPlaylist(buttonID){
   //newDiv.innerHTML = currentSearchedSongs[index];
   queue.appendChild(newDiv);
   counter++;
-  
+  deleteButton.addEventListener("click", deleteSong.bind(null,songID));
 }
 
 function deleteSong(songID){
-  console.log("delete button clicked for " + songID);
+  console.log("delete button clicked for " + currentSongID);
+  const currentSong = document.getElementById(currentSongID);
+  currentSong.remove();
   
 }
