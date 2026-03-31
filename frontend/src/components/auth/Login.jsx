@@ -12,20 +12,21 @@ function Login({ onLogin, onGoSignup }) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    const normalizedUsername = username.toLowerCase();
 
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username:normalizedUsername, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setMessage("✓ Logged in!");
-        setTimeout(() => onLogin({ username, isAdmin: data.isAdmin }), 800);
+        setTimeout(() => onLogin({ username:normalizedUsername, isAdmin: data.isAdmin }), 800);
       } else {
         setMessage(data.message || "Login failed.");
         setLoading(false);
