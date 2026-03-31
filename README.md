@@ -40,7 +40,7 @@ Both should print version numbers.
 
 ### Installation
 
-**1. Clone the repository:**
+**1. Open the Terminal on Mac. Clone the repository:**
 
 ```bash
 git clone https://github.com/Devaloupe/Music-Social-Platform.git
@@ -61,20 +61,22 @@ npm install
 cd ..
 ```
 
-**4. Create a `.env` file** in the root of the project folder
+**4. Ensure the `.env` file, that you created earlier is in the root of the project folder**
 
+> The file extension **MUST** be '.env', otherwise the server will not run. This file is your root credential into the MongoDB database.
 > The '.env' file should never be pushed to GitHub due to security reasons.  In which case, please contact one of the repository owners or contributors to receive the `.env` contents, then create the file manually on your device.
 
 ---
 
 ### Running the Project
  
-You need **two terminals** open at the same time:
+You need **two Terminal windows** open at the same time:
  
 **Terminal 1 — Start the backend server:**
  
 ```bash
-node Server/server.js
+node ...Server/server.js
+** replace ... with the path folder of where you have Server/server.js**
 ```
  
 You should see:
@@ -95,6 +97,52 @@ React will automatically open your browser at `http://localhost:3000`
 > Both servers must be running at the same time for the app to work.
  
 ---
+
+### Usage after Initial Installation
+
+**1. Open the Project Folder:**
+
+```
+cd Music-Social-Platform
+```
+
+**2. Ensure the `.env` file, that you created earlier is in the root of the project folder**
+
+> The file extension **MUST** be '.env', otherwise the server will not run. This file is your root credential into the MongoDB database.
+> The '.env' file should never be pushed to GitHub due to security reasons.  In which case, please contact one of the repository owners or contributors to receive the `.env` contents, then create the file manually on your device.
+
+---
+
+### Running the Project
+ 
+You need **two Terminal windows** open at the same time, we will focus on just the first terminal window for now. Instruction on the second window will be discussed a later in the instructions:
+ 
+**Terminal Window 1 — Open Terminal on Mac, start the first backend server:**
+ 
+```
+node ...Server/server.js
+** replace ... with the path folder of where you have Server/server.js**
+```
+ 
+You should see:
+```
+Server running on port 3001
+MongoDB connected!
+```
+ 
+**Terminal Window 2 — Start the React frontend:**
+ 
+```
+cd frontend
+npm start
+```
+ 
+React will automatically open your browser at `http://localhost:3000`
+ 
+> Both servers must be running at the same time for the app to work.
+ 
+---
+
 
 ## 📸 Pictures / Videos
 
