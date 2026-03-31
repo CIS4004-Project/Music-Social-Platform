@@ -20,8 +20,9 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected!'))
   .catch(err => console.log('DB Error:', err));
 
-  // Routes
+// Routes
 app.use('/auth', require('./routes/auth'));
+app.use('/admin', require('./routes/admin'));
 
 // Test route
 app.get('/', (req, res) => {

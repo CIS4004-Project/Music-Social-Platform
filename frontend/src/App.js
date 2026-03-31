@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import Login from './components/Login';
-import Signup from './components/Signup';
-import Home from './components/Home';
-import NotesBg from './components/NotesBg';
+import Login from './components/auth/Login';
+import Signup from './components/auth/Signup';
+import Home from './components/user/Home';
+import AdminPanel from './components/admin/AdminPanel';
+import NotesBg from './components/shared/NotesBg';
 import './App.css';
 
 function App() {
@@ -11,7 +12,11 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    setPage('home');
+    if (userData.isAdmin) {
+      setPage('admin');
+    } else {
+      setPage('home');
+    }
   };
 
   const handleLogout = () => {
@@ -31,6 +36,9 @@ function App() {
       )}
       {page === 'home' && (
         <Home user={user} onLogout={handleLogout} />
+      )}
+      {page === 'admin' && (
+        <AdminPanel user={user} onLogout={handleLogout} />
       )}
     </div>
   );
