@@ -38,7 +38,7 @@ Both should print version numbers.
 
 ---
 
-### Installation
+### Initial Installation
 
 **1. Open the Terminal on Mac. Clone the repository:**
 
@@ -77,10 +77,11 @@ You need **two Terminal windows** open at the same time:
 ```bash
 node ...Server/server.js
 ```
-(replace ... with the path folder of where you have Server/server.js)
- 
+(replace '...' with the path folder of where you have Server/server.js)
+
+
 You should see:
-```
+```bash
 Server running on port 3001
 MongoDB connected!
 ```
@@ -102,7 +103,7 @@ React will automatically open your browser at `http://localhost:3000`
 
 **1. Open the Project Folder:**
 
-```
+```bash
 cd Music-Social-Platform
 ```
 
@@ -119,20 +120,21 @@ You need **two Terminal windows** open at the same time, we will focus on just t
  
 **Terminal Window 1 — Open Terminal on Mac, start the first backend server:**
  
-```
+```bash
 node ...Server/server.js
-** replace ... with the path folder of where you have Server/server.js**
 ```
- 
+(replace '...' with the path folder of where you have Server/server.js)
+
+
 You should see:
-```
+```bash
 Server running on port 3001
 MongoDB connected!
 ```
  
 **Terminal Window 2 — Start the React frontend:**
  
-```
+```bash
 cd frontend
 npm start
 ```
