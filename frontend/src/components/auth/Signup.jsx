@@ -22,6 +22,13 @@ function Signup({ onSignup, onGoLogin }) {
     e.preventDefault();
     setMessage('');
 
+    if(form.username.includes(' ')) {
+        setMessage('Your username cannot contain spaces.')
+        return;
+}
+
+    const normalizedUsername = form.username.toLowercase();
+
     if (form.password !== form.confirmPassword) {
       setMessage('Passwords do not match.');
       return;
@@ -38,7 +45,7 @@ function Signup({ onSignup, onGoLogin }) {
           firstName: form.firstName,
           lastName: form.lastName,
           email: form.email,
-          username: form.username,
+          username: normalizedUsername,
           password: form.password,
         }),
       });

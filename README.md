@@ -114,7 +114,7 @@ cd Music-Social-Platform
 
 ---
 
-### Running the Project
+### Starting up the Project again
  
 You need **two Terminal windows** open at the same time, we will focus on just the first terminal window for now. Instruction on the second window will be discussed a later in the instructions:
  
