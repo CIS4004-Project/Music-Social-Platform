@@ -76,8 +76,8 @@ You need **two Terminal windows** open at the same time:
  
 ```bash
 node ...Server/server.js
-** replace ... with the path folder of where you have Server/server.js**
 ```
+(replace ... with the path folder of where you have Server/server.js)
  
 You should see:
 ```
