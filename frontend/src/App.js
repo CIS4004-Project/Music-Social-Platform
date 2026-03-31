@@ -10,6 +10,7 @@ function App() {
   const [page, setPage] = useState('login');
   const [user, setUser] = useState(null);
 
+  // 1. ADD THIS BACK: The function logic
   const handleLogin = (userData) => {
     setUser(userData);
     if (userData.isAdmin) {
@@ -24,19 +25,29 @@ function App() {
     setPage('login');
   };
 
+  // 2. Define the "Clean Pages" (No falling notes)
+  const cleanPages = ['admin', 'settings', 'profile'];
+
+  // 3. Check if the current page is in that list
+  const showNotes = !cleanPages.includes(page);
+
   return (
     <div className="app">
-      <NotesBg />
+      {/* Render the background only if it's NOT a clean page */}
+      {showNotes && <NotesBg />}
 
       {page === 'login' && (
         <Login onLogin={handleLogin} onGoSignup={() => setPage('signup')} />
       )}
+      
       {page === 'signup' && (
         <Signup onSignup={() => setPage('login')} onGoLogin={() => setPage('login')} />
       )}
+
       {page === 'home' && (
         <Home user={user} onLogout={handleLogout} />
       )}
+
       {page === 'admin' && (
         <AdminPanel user={user} onLogout={handleLogout} />
       )}

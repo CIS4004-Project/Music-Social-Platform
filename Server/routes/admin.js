@@ -42,6 +42,37 @@ router.put('/users/:id', isAdmin, async (req, res) => {
   }
 });
 
+// Toggle admin status
+router.put('/users/:id/admin', isAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.isAdmin = !user.isAdmin; // toggle true/false
+    await user.save();
+    res.json({ message: `User is now ${user.isAdmin ? 'an admin' : 'a standard user'}`, isAdmin: user.isAdmin });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// CREATE user
+router.post('/users', isAdmin, async (req, res) => {
+  const { firstName, lastName, email, username, password } = req.body;
+  try {
+    const exists = await User.findOne({ username });
+    if (exists) return res.status(400).json({ message: 'Username already taken' });
+
+    const bcrypt = require('bcrypt');
+    const hashed = await bcrypt.hash(password, 10);
+    const user = new User({ firstName, lastName, email, username, password: hashed });
+    await user.save();
+    res.json({ message: 'User created!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 router.delete('/users/:id', isAdmin, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);

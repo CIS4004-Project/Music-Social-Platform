@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import './AdminPanel.css';
-
-const API = 'http://localhost:3001';
+import React, { useState, useEffect } from "react";
+import "./AdminPanel.css";
+const API = "http://localhost:3001";
 
 function AdminPanel({ user, onLogout }) {
   const [users, setUsers] = useState([]); // all users from database
   const [filteredUsers, setFilteredUsers] = useState([]); // users after search filter
   const [selectedUser, setSelectedUser] = useState(null); // user clicked on
-  const [search, setSearch] = useState(''); // search input value
+  const [search, setSearch] = useState(""); // search input value
   const [editForm, setEditForm] = useState({}); // form values for editing
-  const [message, setMessage] = useState(''); // success/error message
-  const [messageType, setMessageType] = useState('');
+  const [message, setMessage] = useState(""); // success/error message
+  const [messageType, setMessageType] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    password: "",
+  });
 
   // Fetch all users on load
   useEffect(() => {
@@ -23,35 +30,36 @@ function AdminPanel({ user, onLogout }) {
       setFilteredUsers(users);
     } else {
       setFilteredUsers(
-        users.filter(u =>
-          u.username.toLowerCase().includes(search.toLowerCase()) ||
-          u.firstName?.toLowerCase().includes(search.toLowerCase()) ||
-          u.lastName?.toLowerCase().includes(search.toLowerCase())
-        )
+        users.filter(
+          (u) =>
+            u.username.toLowerCase().includes(search.toLowerCase()) ||
+            u.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+            u.lastName?.toLowerCase().includes(search.toLowerCase()),
+        ),
       );
     }
   }, [search, users]);
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${API}/admin/users`, { credentials: 'include' });
+      const res = await fetch(`${API}/admin/users`, { credentials: "include" });
       const data = await res.json();
       setUsers(data);
       setFilteredUsers(data);
     } catch {
-      showMessage('Could not load users.', 'error');
+      showMessage("Could not load users.", "error");
     }
   };
 
   const handleSelectUser = (u) => {
     setSelectedUser(u);
     setEditForm({
-      firstName: u.firstName || '',
-      lastName: u.lastName || '',
-      email: u.email || '',
-      username: u.username || '',
+      firstName: u.firstName || "",
+      lastName: u.lastName || "",
+      email: u.email || "",
+      username: u.username || "",
     });
-    setMessage('');
+    setMessage("");
   };
 
   const handleEditChange = (e) => {
@@ -61,48 +69,100 @@ function AdminPanel({ user, onLogout }) {
   const handleUpdate = async () => {
     try {
       const res = await fetch(`${API}/admin/users/${selectedUser._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(editForm),
       });
       const data = await res.json();
       if (res.ok) {
-        showMessage('✓ User updated!', 'success');
+        showMessage("✓ User updated!", "success");
         fetchUsers();
         setSelectedUser({ ...selectedUser, ...editForm });
       } else {
-        showMessage(data.message || 'Update failed.', 'error');
+        showMessage(data.message || "Update failed.", "error");
       }
     } catch {
-      showMessage('Could not connect to server.', 'error');
+      showMessage("Could not connect to server.", "error");
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete ${selectedUser.username}?`)) return;
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedUser.username}?`,
+      )
+    )
+      return;
     try {
       const res = await fetch(`${API}/admin/users/${selectedUser._id}`, {
-        method: 'DELETE',
-        credentials: 'include',
+        method: "DELETE",
+        credentials: "include",
       });
       const data = await res.json();
       if (res.ok) {
-        showMessage('✓ User deleted!', 'success');
+        showMessage("✓ User deleted!", "success");
         setSelectedUser(null);
         fetchUsers();
       } else {
-        showMessage(data.message || 'Delete failed.', 'error');
+        showMessage(data.message || "Delete failed.", "error");
       }
     } catch {
-      showMessage('Could not connect to server.', 'error');
+      showMessage("Could not connect to server.", "error");
+    }
+  };
+
+  const handleToggleAdmin = async () => {
+    try {
+      const res = await fetch(`${API}/admin/users/${selectedUser._id}/admin`, {
+        method: "PUT",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showMessage(data.message, "success");
+        fetchUsers();
+        setSelectedUser({ ...selectedUser, isAdmin: !selectedUser.isAdmin });
+      } else {
+        showMessage(data.message || "Failed.", "error");
+      }
+    } catch {
+      showMessage("Could not connect to server.", "error");
+    }
+  };
+
+  const handleCreateUser = async () => {
+    try {
+      const res = await fetch(`${API}/admin/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(createForm),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showMessage("✓ User created!", "success");
+        setShowCreateForm(false);
+        setCreateForm({
+          firstName: "",
+          lastName: "",
+          email: "",
+          username: "",
+          password: "",
+        });
+        fetchUsers();
+      } else {
+        showMessage(data.message || "Failed to create user.", "error");
+      }
+    } catch {
+      showMessage("Could not connect to server.", "error");
     }
   };
 
   const showMessage = (msg, type) => {
     setMessage(msg);
     setMessageType(type);
-    setTimeout(() => setMessage(''), 3000);
+    setTimeout(() => setMessage(""), 3000);
   };
 
   return (
@@ -112,7 +172,9 @@ function AdminPanel({ user, onLogout }) {
         <h1 className="admin-brand">Audify</h1>
         <div className="admin-nav-right">
           <span className="admin-welcome">👑 {user?.username}</span>
-          <button className="admin-logout-btn" onClick={onLogout}>Log Out</button>
+          <button className="admin-logout-btn" onClick={onLogout}>
+            Log Out
+          </button>
         </div>
       </div>
 
@@ -130,17 +192,67 @@ function AdminPanel({ user, onLogout }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <span>🔍</span>
           </div>
+
+          <button
+            className="btn-create-user"
+            onClick={() => setShowCreateForm(!showCreateForm)}
+          >
+            {showCreateForm ? "✕ Cancel" : "+ Create User"}
+          </button>
+
+          {showCreateForm && (
+            <div className="create-user-form">
+              <input
+                placeholder="First Name"
+                value={createForm.firstName}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, firstName: e.target.value })
+                }
+              />
+              <input
+                placeholder="Last Name"
+                value={createForm.lastName}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, lastName: e.target.value })
+                }
+              />
+              <input
+                placeholder="Email"
+                value={createForm.email}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, email: e.target.value })
+                }
+              />
+              <input
+                placeholder="Username"
+                value={createForm.username}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, username: e.target.value })
+                }
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={createForm.password}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, password: e.target.value })
+                }
+              />
+              <button className="btn-save" onClick={handleCreateUser}>
+                Create User
+              </button>
+            </div>
+          )}
 
           <div className="admin-user-list">
             {filteredUsers.length === 0 && (
               <p className="no-users">No users found.</p>
             )}
-            {filteredUsers.map(u => (
+            {filteredUsers.map((u) => (
               <div
                 key={u._id}
-                className={`admin-user-item ${selectedUser?._id === u._id ? 'active' : ''}`}
+                className={`admin-user-item ${selectedUser?._id === u._id ? "active" : ""}`}
                 onClick={() => handleSelectUser(u)}
               >
                 <span>{u.username}</span>
@@ -200,8 +312,20 @@ function AdminPanel({ user, onLogout }) {
               </div>
 
               <div className="admin-actions">
-                <button className="btn-save" onClick={handleUpdate}>Save Changes</button>
-                <button className="btn-delete" onClick={handleDelete}>Delete User</button>
+                <button className="btn-save" onClick={handleUpdate}>
+                  Save Changes
+                </button>
+                <button
+                  className={
+                    selectedUser.isAdmin ? "btn-remove-admin" : "btn-make-admin"
+                  }
+                  onClick={handleToggleAdmin}
+                >
+                  {selectedUser.isAdmin ? "Remove Admin" : "Make Admin"}
+                </button>
+                <button className="btn-delete" onClick={handleDelete}>
+                  Delete User
+                </button>
               </div>
 
               {message && (
@@ -209,7 +333,7 @@ function AdminPanel({ user, onLogout }) {
               )}
 
               {/* USER'S LIKED SONGS */}
-              <h2 style={{ marginTop: '32px' }}>
+              <h2 style={{ marginTop: "32px" }}>
                 {selectedUser.username}'s Liked Songs
               </h2>
 
@@ -219,9 +343,7 @@ function AdminPanel({ user, onLogout }) {
                 ) : (
                   selectedUser.songs.map((song, index) => (
                     <div key={index} className="admin-song-card">
-                      {song.image && (
-                        <img src={song.image} alt={song.title} />
-                      )}
+                      {song.image && <img src={song.image} alt={song.title} />}
                       <p className="song-title">{song.title}</p>
                       <p className="song-artist">{song.artist}</p>
                     </div>

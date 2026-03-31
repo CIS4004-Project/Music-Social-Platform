@@ -256,6 +256,58 @@
   box-shadow: 0 6px 20px rgba(200, 0, 0, 0.4);
 }
 
+.btn-create-user {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, hsl(265, 100%, 35%), hsl(265, 100%, 55%));
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+}
+
+.btn-create-user:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px hsla(265, 100%, 50%, 0.4);
+}
+
+.create-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid hsl(265, 40%, 25%);
+  border-radius: 10px;
+}
+
+.create-user-form input {
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid hsl(265, 40%, 30%);
+  border-radius: 8px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.create-user-form input:focus {
+  border-color: hsl(265, 100%, 60%);
+  box-shadow: 0 0 12px hsla(265, 100%, 50%, 0.3);
+}
+
+.create-user-form input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
 /* --- MESSAGES --- */
 .admin-message {
   font-size: 0.9rem;
@@ -272,6 +324,42 @@
 .admin-message.error {
   color: #ff6b6b;
   background: rgba(255, 107, 107, 0.1);
+}
+
+.btn-make-admin {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #1a6b1a, #2d9e2d);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-make-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 158, 45, 0.4);
+}
+
+.btn-remove-admin {
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #b8600a, #e07b0f);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-remove-admin:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(224, 123, 15, 0.4);
 }
 
 /* --- SONGS GRID --- */

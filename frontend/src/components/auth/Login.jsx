@@ -1,37 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const API = 'http://localhost:3001';
+const API = "http://localhost:3001";
 
 function Login({ onLogin, onGoSignup }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setMessage("");
 
     try {
       const res = await fetch(`${API}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setMessage('✓ Logged in!');
+        setMessage("✓ Logged in!");
         setTimeout(() => onLogin({ username, isAdmin: data.isAdmin }), 800);
       } else {
-        setMessage(data.message || 'Login failed.');
+        setMessage(data.message || "Login failed.");
         setLoading(false);
       }
     } catch {
-      setMessage('Could not connect to server.');
+      setMessage("Could not connect to server.");
       setLoading(false);
     }
   };
@@ -69,12 +69,14 @@ function Login({ onLogin, onGoSignup }) {
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Logging in...' : 'Log In'}
+              {loading ? "Logging in..." : "Log In"}
             </button>
           </form>
 
           {message && (
-            <p className={`message ${message.startsWith('✓') ? 'success' : 'error'}`}>
+            <p
+              className={`message ${message.startsWith("✓") ? "success" : "error"}`}
+            >
               {message}
             </p>
           )}

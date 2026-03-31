@@ -11,13 +11,19 @@ router.get('/check-username/:username', async (req, res) => {
 
 // Signup
 router.post('/signup', async (req, res) => {
-  const { username, password } = req.body;
+  const { firstName, lastName, email, username, password } = req.body; // ← add these
   try {
     const exists = await User.findOne({ username });
     if (exists) return res.status(400).json({ message: 'Username already taken' });
 
     const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashed });
+    const user = new User({ 
+      firstName,   // ← add these
+      lastName,    // ← add these
+      email,       // ← add these
+      username, 
+      password: hashed 
+    });
     await user.save();
     res.json({ message: 'Account created!' });
   } catch (err) {
