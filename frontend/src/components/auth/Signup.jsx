@@ -27,7 +27,7 @@ function Signup({ onSignup, onGoLogin }) {
         return;
 }
 
-    const normalizedUsername = form.username.toLowercase();
+    const normalizedUsername = form.username.toLowerCase();
 
     if (form.password !== form.confirmPassword) {
       setMessage('Passwords do not match.');
