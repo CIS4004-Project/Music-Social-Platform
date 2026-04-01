@@ -1,33 +1,11 @@
-/*import React from 'react';
-
-function Home({ user, onLogout }) {
-  return (
-    <>
-      <div className="auth-wrapper">
-        <h1 className="brand-title">Audify</h1>
-        <div className="auth-card">
-          <h2>Welcome, {user?.username}!</h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '12px', marginBottom: '24px' }}>
-            {user?.isAdmin ? '👑 Admin Account' : '🎵 Standard User'}
-          </p>
-          <button className="btn-primary" onClick={onLogout}>Log Out</button>
-        </div>
-      </div>
-    </>
-  );
-}
-
-export default Home;*/
 import React, { useState } from 'react';
-import './Home.css';
 
-const Home = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const main_page = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [queue, setQueue] = useState([]);
 
   const searchMusic = () => {
-    console.log('Search'); //have to add api call  
+    console.log('Search');
 
   };
 
@@ -39,16 +17,14 @@ const Home = () => {
     <div id="home-content" className="hidden">
       <div id="search-section">
         <div id="search-bar">
-          <input type="text" id="search" placeholder="Search for songs..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <input type="text" id="search" placeholder="Search for songs..."/>
           <button onclick={searchMusic}>Search</button>
         </div>
-        
+        <div id="results" />
         {searchResults.length > 0 && (
-          <ul id="results">
+          <ul>
             {searchResults.map((song) => (
-              <li key={song.id}>{song.title} by {song.artist}
-              {/* <button >Add to Queue</button> */}
-              </li>
+              <li key={song.id}>{song.title} by {song.artist}</li>
             ))}
           </ul>
         )}
@@ -76,5 +52,4 @@ const Home = () => {
 </main>);
 };
 
-export default Home;
-
+export default MainUser;
