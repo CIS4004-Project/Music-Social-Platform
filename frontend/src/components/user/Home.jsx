@@ -25,11 +25,60 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [queue, setQueue] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
+  const [playlistName, setPlaylistName] = useState('');
 
   const searchMusic = () => {
-    console.log('Search'); //have to add api call  
+    const searchMusic = async () => {
+    if (!searchTerm.trim()) return;
+
+    try{
+      const res = await fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`
+      );
+      const data = await res.json();
+
+      if (data.results.length == 0){
+        setSearchResults([]0;
+        return;
+      }
+
+      const formattedResults = data.results.map((song, index) => ({
+        id: song.trackId,
+        title: song.trackName,
+        artist: song.artistName})
+      );
+      setSearchResults(formattedResults);
+    }
+      catch(err){
+        console.error('Could not fetch songs', err);
+        setSearchResults([]);
+      }
 
   };
+
+  const addToQueue = (song) => {
+    setQueue((prevQueue) => [...prevQueue, song]);
+  };
+
+  const deleteFromQueue = (songId) => {
+    setQueue((prevQueue) => prevQueue.filter((song) => song.id !== songId));
+  };
+
+  const finishPlaylist = () => {
+    if (!playlistName.trim() || queue.length === 0) return;
+
+  const newPlaylist = {
+      name: playlistName,
+      songs: [...queue],
+      id: playlists.length 
+    };
+
+    setPlaylists((prev) => [...prev, newPlaylist]);
+    setQueue([]); // clear queue
+    setPlaylistName(''); // clear input
+  };
+    
 
   return (
     <main>
@@ -46,34 +95,50 @@ const Home = () => {
         {searchResults.length > 0 && (
           <ul id="results">
             {searchResults.map((song) => (
-              <li key={song.id}>{song.title} by {song.artist}
-              {/* <button >Add to Queue</button> */}
-              </li>
-            ))}
-          </ul>
-        )}
+                <div key={song.id} className="song-card">
+                  <img src={song.artwork} alt={song.title} />
+                  <div className="song-info">
+                    <p className="song-title">{song.title}</p>
+                    <p className="song-artist">{song.artist}</p>
+                    <audio controls src={song.preview}></audio>
+                  </div>
+                  <button onClick={() => addToQueue(song)}>Add to Queue</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
   <h2>Your Song Queue</h2>
   <label htmlFor="playlistname">Playlist Name:</label>
-  <input type="text" id="playlistname" name="playlistname" />
+  <input type="text" id="playlistname" name="playlistname" value={playlistName} onChange={(e) => setPlaylistName(e.target.value)}/>
   <br />
   <br />
   <div id="queue">
     {queue.length > 0 ? (
       <ul>
         {queue.map((song) => (
-          <li key={song.id}>{song.title} by {song.artist}</li>
+          <li key={song.id}>{song.title} by {song.artist} <button onClick={() => deleteFromQueue(song.id)}>Delete</button> </li>
         ))}
       </ul>
     ) : (
       <p>Your queue is empty.</p>
     )}
   </div>
-  <button>Finish Playlist</button>
+  <button onClick={finishPlaylist} >Finish Playlist</button>
   <h2>Your Playlists</h2>
-  <h3>Your Liked Songs</h3>
-</main>);
+      {playlists.map((pl) => (
+        <div key={pl.id} className="playlist">
+          <h3>{pl.name}</h3>
+          <ul>
+            {pl.songs.map((song) => (
+              <li key={song.id}>
+                {song.title} by {song.artist}
+              </li>
+            ))}
+  
+</main>
+  );
 };
 
 export default Home;
