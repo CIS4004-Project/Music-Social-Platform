@@ -412,3 +412,68 @@
   color: rgba(255, 255, 255, 0.3);
   grid-column: 1 / -1;
 }
+
+/* Sort bar */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.sort-btn {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid hsl(265, 40%, 30%);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "Nunito", sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sort-btn.active {
+  background: hsl(265, 60%, 30%);
+  border-color: hsl(265, 100%, 60%);
+  color: white;
+}
+
+.sort-btn:hover {
+  border-color: hsl(265, 100%, 50%);
+  color: white;
+}
+
+.sort-dropdown {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid hsl(265, 40%, 30%);
+  border-radius: 8px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.sort-dropdown option {
+  background: #0d0015;
+  color: white;
+}
+
+/* Role badges */
+.role-badge {
+  font-size: 1rem;
+}
+
+.role-badge.admin {
+  filter: drop-shadow(0 0 4px gold);
+}
+
+.role-badge.standard {
+  opacity: 0.7;
+}

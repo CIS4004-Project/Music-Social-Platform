@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./AdminPanel.css";
 const API = "http://localhost:3001";
 
@@ -11,6 +11,7 @@ function AdminPanel({ user, onLogout }) {
   const [message, setMessage] = useState(""); // success/error message
   const [messageType, setMessageType] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [sortBy, setSortBy] = useState("username");
   const [createForm, setCreateForm] = useState({
     firstName: "",
     lastName: "",
@@ -19,28 +20,7 @@ function AdminPanel({ user, onLogout }) {
     password: "",
   });
 
-  // Fetch all users on load
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  // Filter users based on search
-  useEffect(() => {
-    if (!search) {
-      setFilteredUsers(users);
-    } else {
-      setFilteredUsers(
-        users.filter(
-          (u) =>
-            u.username.toLowerCase().includes(search.toLowerCase()) ||
-            u.firstName?.toLowerCase().includes(search.toLowerCase()) ||
-            u.lastName?.toLowerCase().includes(search.toLowerCase()),
-        ),
-      );
-    }
-  }, [search, users]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const res = await fetch(`${API}/admin/users`, { credentials: "include" });
       const data = await res.json();
@@ -49,7 +29,35 @@ function AdminPanel({ user, onLogout }) {
     } catch {
       showMessage("Could not load users.", "error");
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  // Filter users based on search
+  useEffect(() => {
+    let result = [...users];
+
+    // Filter by search
+    if (search) {
+      result = result.filter(
+        (u) =>
+          u.username.toLowerCase().includes(search.toLowerCase()) ||
+          u.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+          u.lastName?.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
+
+    // Sort
+    if (sortBy === "username") {
+      result.sort((a, b) => a.username.localeCompare(b.username));
+    } else if (sortBy === "created") {
+      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    setFilteredUsers(result);
+  }, [search, users, sortBy]);
 
   const handleSelectUser = (u) => {
     setSelectedUser(u);
@@ -194,6 +202,18 @@ function AdminPanel({ user, onLogout }) {
             />
           </div>
 
+          <div className="sort-bar">
+            <label>Sort by:</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="sort-dropdown"
+            >
+              <option value="username">Alphabetical</option>
+              <option value="created">Date Created</option>
+            </select>
+          </div>
+
           <button
             className="btn-create-user"
             onClick={() => setShowCreateForm(!showCreateForm)}
@@ -256,7 +276,14 @@ function AdminPanel({ user, onLogout }) {
                 onClick={() => handleSelectUser(u)}
               >
                 <span>{u.username}</span>
-                <span className="view-icon">👁</span>
+                <span
+                  className={
+                    u.isAdmin ? "role-badge admin" : "role-badge standard"
+                  }
+                  title={u.isAdmin ? "Administrator" : "Standard User"}
+                >
+                  {u.isAdmin ? "👑" : "🎵"}
+                </span>{" "}
               </div>
             ))}
           </div>
