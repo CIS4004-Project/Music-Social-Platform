@@ -1,143 +1,47 @@
-/*import React from 'react';
-
-function Home({ user, onLogout }) {
-  return (
-    <>
-      <div className="auth-wrapper">
-        <h1 className="brand-title">Audify</h1>
-        <div className="auth-card">
-          <h2>Welcome, {user?.username}!</h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '12px', marginBottom: '24px' }}>
-            {user?.isAdmin ? '👑 Admin Account' : '🎵 Standard User'}
-          </p>
-          <button className="btn-primary" onClick={onLogout}>Log Out</button>
-        </div>
-      </div>
-    </>
-  );
-}
-
-export default Home;*/
-/*import React, { useState } from 'react';
-import './Home.css';
-
-const Home = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [queue, setQueue] = useState([]);
-  const [playlists, setPlaylists] = useState([]);
-  const [playlistName, setPlaylistName] = useState('');
-
-
-  const searchMusic = () => {
-    const searchMusic = async () => {
-    if (!searchTerm.trim()) return;
-
-    try{
-      const res = await fetch(
-        `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`
-      );
-      const data = await res.json();
-
-      if (data.results.length == 0){
-        setSearchResults([0]);
-        return;
-      }
-
-      const formattedResults = data.results.map((song, index) => ({
-        id: song.trackId,
-        title: song.trackName,
-        artist: song.artistName})
-      );
-      setSearchResults(formattedResults);
-    }
-      catch(err){
-        console.error('Could not fetch songs', err);
-        setSearchResults([]);
-      }
-
-  };
-
-  const addToQueue = (song) => {
-    setQueue((prevQueue) => [...prevQueue, song]);
-  };
-
-  const deleteFromQueue = (songId) => {
-    setQueue((prevQueue) => prevQueue.filter((song) => song.id !== songId));
-  };
-
-  const finishPlaylist = () => {
-    if (!playlistName.trim() || queue.length === 0) return;
-
-  const newPlaylist = {
-      name: playlistName,
-      songs: [...queue],
-      id: playlists.length 
-    };
-
-    setPlaylists((prev) => [...prev, newPlaylist]);
-    setQueue([]); // clear queue
-    setPlaylistName(''); // clear input
-  };
-    
-  return (
-    
-      <div className="auth-wrapper">
-        <h1 className="brand-title">Audify</h1>
-        <div className="auth-card">
-          <h2>Welcome, {user?.username}!</h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '12px', marginBottom: '24px' }}>
-            {user?.isAdmin ? '👑 Admin Account' : '🎵 Standard User'}
-          </p>
-          <button className="btn-primary" onClick={onLogout}>Log Out</button>
-        </div>
-      </div>
-  );
-}
-
-export default Home;*/
 import React, { useState } from 'react';
 import './Home.css';
 
-function Home({ user, onLogout }) {
+const Home = ({ user, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [queue, setQueue] = useState([]);
   const [playlists, setPlaylists] = useState([]);
   const [playlistName, setPlaylistName] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
-  const searchMusic = () => {
-    const searchMusic = async () => {
+  // --- Search Logic ---
+  const searchMusic = async () => {
     if (!searchTerm.trim()) return;
 
-    try{
-      const res = await fetch(
-        `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`
-      );
+    try {
+      const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`);
       const data = await res.json();
 
-      if (data.results.length === 0){
-        setSearchResults([0]);
+      if (data.results.length === 0) {
+        setSearchResults([]);
         return;
       }
 
-      const formattedResults = data.results.map((song, index) => ({
+      const formattedResults = data.results.map((song) => ({
         id: song.trackId,
         title: song.trackName,
-        artist: song.artistName})
-      );
+        artist: song.artistName,
+        artwork: song.artworkUrl100,
+        preview: song.previewUrl
+      }));
+      
       setSearchResults(formattedResults);
+    } catch (err) {
+      console.error('Could not fetch songs', err);
+      setSearchResults([]);
     }
-      catch(err){
-        console.error('Could not fetch songs', err);
-        setSearchResults([]);
-      }
-
-    };
   };
 
+  // --- Queue & Playlist Logic ---
   const addToQueue = (song) => {
-    setQueue((prevQueue) => [...prevQueue, song]);
+    if (!queue.find(qSong => qSong.id === song.id)) {
+      setQueue((prevQueue) => [...prevQueue, song]);
+    }
   };
 
   const deleteFromQueue = (songId) => {
@@ -145,33 +49,51 @@ function Home({ user, onLogout }) {
   };
 
   const finishPlaylist = () => {
-    if (!playlistName.trim() || queue.length === 0) return;
+    if (!playlistName.trim() || queue.length === 0) {
+      alert("Please add a name and some songs to your queue first!");
+      return;
+    }
 
-  const newPlaylist = {
+    const newPlaylist = {
       name: playlistName,
       songs: [...queue],
-      id: playlists.length 
+      id: Date.now() 
     };
 
     setPlaylists((prev) => [...prev, newPlaylist]);
-    setQueue([]); // clear queue
-    setPlaylistName(''); // clear input
+    setShowModal(true); 
   };
-    
+
+  const closeAndReset = () => {
+    setShowModal(false);
+    setQueue([]); 
+    setPlaylistName(''); 
+  };
 
   return (
-    <main>
-      <h1>Audify</h1>
-      <h2>Welcome, [User]!</h2>
+    <div className="home-wrapper">
+      {/* Renders the background animation behind everything! */}
+      
+      <main className="dashboard-card">
+        <h1 className="brand-title">Audify</h1>
+        
+        <h2>Welcome Back, {user?.username || 'Guest'}!</h2>
+        {onLogout && <button className="btn-delete" onClick={onLogout} style={{marginBottom: '20px'}}>Log Out</button>}
 
-      <div id="home-content" className="hidden">
-        <div id="search-section">
-          <div id="search-bar">
-            <input type="text" id="search" placeholder="Search for songs..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-            <button onclick={searchMusic}>Search</button>
-          </div>
-          {searchResults.length > 0 && (
-            <ul id="results">
+        <div id="home-content">
+          <div id="search-section">
+            <div id="search-bar">
+              <input 
+                type="text" 
+                placeholder="Search for songs..." 
+                value={searchTerm} 
+                onChange={(e) => setSearchTerm(e.target.value)} 
+                onKeyDown={(e) => e.key === 'Enter' && searchMusic()}
+              />
+              <button className="btn-primary" onClick={searchMusic}>Search</button>
+            </div>
+            
+            <div id="results">
               {searchResults.map((song) => (
                 <div key={song.id} className="song-card">
                   <img src={song.artwork} alt={song.title} />
@@ -180,50 +102,74 @@ function Home({ user, onLogout }) {
                     <p className="song-artist">{song.artist}</p>
                     <audio controls src={song.preview}></audio>
                   </div>
-                  <button onClick={() => addToQueue(song)}>Add to Queue</button>
+                  <button className="btn-add" onClick={() => addToQueue(song)}>Add</button>
                 </div>
-                ))
-              }
-            </ul>
-            )
-          };
-        </div> 
-        <h2>Your Song Queue</h2>
-        <label htmlFor="playlistname">Playlist Name:</label>
-        <input type="text" id="playlistname" name="playlistname" value={playlistName} onChange={(e) => setPlaylistName(e.target.value)}/>
-        <br />
-        <br />
-        <div id="queue">
-        {queue.length > 0 ? (
-              <ul>
-                {queue.map((song) => (
-                  <li key={song.id}>{song.title} by {song.artist} <button onClick={() => deleteFromQueue(song.id)}>Delete</button> </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Your queue is empty.</p>
-            )}
-        </div>
-        <button onClick={finishPlaylist} >Finish Playlist</button>
-        <h2>Your Playlists</h2>
-        {playlists.map((pl)=>
-          <div key={pl.id} className="playlist">
-            <h3>{pl.name}</h3>
-            <ul>
-              {pl.songs.map((song) => (
-                <li key={song.id}>
-                  {song.title} by {song.artist}
-                </li>
-              )
-              )}
-            </ul>
+              ))}
+            </div>
           </div>
-          )
+          
+          <h2>Your Song Queue</h2>
+          <div className="input-group">
+            <label htmlFor="playlistname">Playlist Name:</label>
+            <input 
+              type="text" 
+              id="playlistname" 
+              value={playlistName} 
+              placeholder="E.g. Study Vibes"
+              onChange={(e) => setPlaylistName(e.target.value)}
+            />
+          </div>
+          
+          <div id="queue">
+            {queue.length > 0 ? (
+              queue.map((song) => (
+                <div key={song.id} className="song-card queue-card">
+                  <div className="song-info">
+                    <p className="song-title">{song.title}</p>
+                    <p className="song-artist">{song.artist}</p>
+                  </div>
+                  <button className="btn-delete" onClick={() => deleteFromQueue(song.id)}>Delete</button>
+                </div>
+              ))
+            ) : (
+              <p className="empty-text">Your queue is empty. Search for songs to add!</p>
+            )}
+          </div>
+          
+          <button className="btn-primary finish-btn" onClick={finishPlaylist}>Finish Playlist</button>
+          
+          <h2>Your Saved Playlists</h2>
+          {playlists.length > 0 ? (
+            playlists.map((pl) => (
+              <div key={pl.id} className="saved-playlist">
+                <h3 className="brand-title" style={{fontSize: '1.5rem', textAlign: 'left'}}>{pl.name}</h3>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                  {pl.songs.map((song) => (
+                    <div key={song.id} style={{padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '6px'}}>
+                      <strong>{song.title}</strong> by {song.artist}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="empty-text">No playlists saved yet.</p>
+          )}
+        </div>
+      </main>
 
-        }
-      </div>
-    </main>
+      {/* --- Success Modal --- */}
+      {showModal && (
+        <div id="playlist-modal">
+          <div className="modal-content">
+            <h2 style={{marginTop: 0, color: 'hsl(265, 100%, 70%)'}}>Playlist Saved!</h2>
+            <p>Your playlist <strong>{playlistName}</strong> has been created successfully.</p>
+            <button className="btn-primary" onClick={closeAndReset} style={{width: '100%', marginTop: '15px'}}>Awesome!</button>
+          </div>
+        </div>
+      )}
+    </div>
   );
-    
-}//end home
+};
+
 export default Home;
