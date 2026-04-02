@@ -18,7 +18,7 @@ function Home({ user, onLogout }) {
 }
 
 export default Home;*/
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import './Home.css';
 
 const Home = () => {
@@ -27,6 +27,7 @@ const Home = () => {
   const [queue, setQueue] = useState([]);
   const [playlists, setPlaylists] = useState([]);
   const [playlistName, setPlaylistName] = useState('');
+
 
   const searchMusic = () => {
     const searchMusic = async () => {
@@ -75,8 +76,86 @@ const Home = () => {
     };
 
     setPlaylists((prev) => [...prev, newPlaylist]);
-    setQueue([]); 
-    setPlaylistName(''); 
+    setQueue([]); // clear queue
+    setPlaylistName(''); // clear input
+  };
+    
+  return (
+    
+      <div className="auth-wrapper">
+        <h1 className="brand-title">Audify</h1>
+        <div className="auth-card">
+          <h2>Welcome, {user?.username}!</h2>
+          <p style={{ color: 'rgba(255,255,255,0.5)', marginTop: '12px', marginBottom: '24px' }}>
+            {user?.isAdmin ? '👑 Admin Account' : '🎵 Standard User'}
+          </p>
+          <button className="btn-primary" onClick={onLogout}>Log Out</button>
+        </div>
+      </div>
+  );
+}
+
+export default Home;*/
+import React, { useState } from 'react';
+import './Home.css';
+
+function Home({ user, onLogout }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [queue, setQueue] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
+  const [playlistName, setPlaylistName] = useState('');
+
+  const searchMusic = () => {
+    const searchMusic = async () => {
+    if (!searchTerm.trim()) return;
+
+    try{
+      const res = await fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`
+      );
+      const data = await res.json();
+
+      if (data.results.length === 0){
+        setSearchResults([0]);
+        return;
+      }
+
+      const formattedResults = data.results.map((song, index) => ({
+        id: song.trackId,
+        title: song.trackName,
+        artist: song.artistName})
+      );
+      setSearchResults(formattedResults);
+    }
+      catch(err){
+        console.error('Could not fetch songs', err);
+        setSearchResults([]);
+      }
+
+    };
+  };
+
+  const addToQueue = (song) => {
+    setQueue((prevQueue) => [...prevQueue, song]);
+  };
+
+  const deleteFromQueue = (songId) => {
+    setQueue((prevQueue) => prevQueue.filter((song) => song.id !== songId));
+  };
+
+  const finishPlaylist = () => {
+    if (!playlistName.trim() || queue.length === 0) return;
+
+  const newPlaylist = {
+      name: playlistName,
+      songs: [...queue],
+      id: playlists.length 
+    };
+
+    setPlaylists((prev) => [...prev, newPlaylist]);
+    setQueue([]); // clear queue
+    setPlaylistName(''); // clear input
   };
     
 
@@ -144,10 +223,7 @@ const Home = () => {
         }
       </div>
     </main>
-
   );
-
-  }
     
-}
+}//end home
 export default Home;
