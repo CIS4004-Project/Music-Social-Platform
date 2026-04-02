@@ -75,8 +75,8 @@ const Home = () => {
     };
 
     setPlaylists((prev) => [...prev, newPlaylist]);
-    setQueue([]); // clear queue
-    setPlaylistName(''); // clear input
+    setQueue([]); 
+    setPlaylistName(''); 
   };
     
 
@@ -90,8 +90,7 @@ const Home = () => {
           <div id="search-bar">
             <input type="text" id="search" placeholder="Search for songs..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             <button onclick={searchMusic}>Search</button>
-          </div>//end search bar
-          //search function
+          </div>
           {searchResults.length > 0 && (
             <ul id="results">
               {searchResults.map((song) => (
@@ -103,14 +102,13 @@ const Home = () => {
                     <audio controls src={song.preview}></audio>
                   </div>
                   <button onClick={() => addToQueue(song)}>Add to Queue</button>
-                </div>//end song-card
-                ))//end parameter of map
-              }//end map
-            </ul>//end results ul
-            )//end &&
-          };//end searchResults.length
-        </div> //end search section
-        //continue home content
+                </div>
+                ))
+              }
+            </ul>
+            )
+          };
+        </div> 
         <h2>Your Song Queue</h2>
         <label htmlFor="playlistname">Playlist Name:</label>
         <input type="text" id="playlistname" name="playlistname" value={playlistName} onChange={(e) => setPlaylistName(e.target.value)}/>
@@ -125,9 +123,8 @@ const Home = () => {
               </ul>
             ) : (
               <p>Your queue is empty.</p>
-            )}//end queue.length
-        </div>//end queue
-        //continue home content
+            )}
+        </div>
         <button onClick={finishPlaylist} >Finish Playlist</button>
         <h2>Your Playlists</h2>
         {playlists.map((pl)=>
@@ -138,19 +135,19 @@ const Home = () => {
                 <li key={song.id}>
                   {song.title} by {song.artist}
                 </li>
-              )//end song
-              )}//end p1.songs.map
+              )
+              )}
             </ul>
-          </div>//end playlist
-          )//end map paramete
+          </div>
+          )
 
-        }//end playlists map
-      </div>//end home content
+        }
+      </div>
     </main>
 
-  );//end return
+  );
 
-  }//end search
+  }
     
-}//end home
+}
 export default Home;
