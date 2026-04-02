@@ -72,7 +72,7 @@ cd ..
  
 You need **two Terminal windows** open at the same time:
  
-**Terminal 1 — Start the backend server:**
+**5. Terminal Window 1 — First start the backend server:**
  
 ```bash
 node ...Server/server.js
@@ -86,7 +86,7 @@ Server running on port 3001
 MongoDB connected!
 ```
  
-**Terminal 2 — Start the React frontend:**
+**6. Terminal Window 2 — Start the React frontend:**
  
 ```bash
 cd frontend
@@ -97,11 +97,13 @@ React will automatically open your browser at `http://localhost:3000`
  
 > Both servers must be running at the same time for the app to work.
  
+ 
 ---
+
 
 ### Usage after Initial Installation
 
-**1. Open the Project Folder:**
+**1. Open a Terminal Window on Mac, direct 'bash' to the Project Folder:**
 
 ```bash
 cd Music-Social-Platform
@@ -110,15 +112,14 @@ cd Music-Social-Platform
 **2. Ensure the `.env` file, that you created earlier is in the root of the project folder**
 
 > The file extension **MUST** be '.env', otherwise the server will not run. This file is your root credential into the MongoDB database.
+
 > The '.env' file should never be pushed to GitHub due to security reasons.  In which case, please contact one of the repository owners or contributors to receive the `.env` contents, then create the file manually on your device.
 
 ---
-
-### Starting up the Project again
  
-You need **two Terminal windows** open at the same time, we will focus on just the first terminal window for now. Instruction on the second window will be discussed a later in the instructions:
+You need **two Terminal windows** open at the same time.
  
-**Terminal Window 1 — Open Terminal on Mac, start the first backend server:**
+**3. Terminal Window 1 — First start the backend server:**
  
 ```bash
 node ...Server/server.js
@@ -132,7 +133,7 @@ Server running on port 3001
 MongoDB connected!
 ```
  
-**Terminal Window 2 — Start the React frontend:**
+**4. Terminal Window 2 — Start the React frontend:**
  
 ```bash
 cd frontend
