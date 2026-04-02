@@ -62,5 +62,32 @@ router.get('/me', (req, res) => {
   }
   res.json({ userId: req.session.userId, isAdmin: req.session.isAdmin });
 });
+// Verify username + email match
+router.post('/verify-identity', async (req, res) => {
+  const { username, email } = req.body;
+  try {
+    const user = await User.findOne({ username, email });
+    if (!user) return res.status(404).json({ message: 'Username and email do not match.' });
+    res.json({ message: 'Identity verified!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
+// Reset password
+router.post('/reset-password', async (req, res) => {
+  const { username, email, newPassword } = req.body;
+  try {
+    const user = await User.findOne({ username, email });
+    if (!user) return res.status(404).json({ message: 'Username and email do not match.' });
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+    await user.save();
+
+    res.json({ message: 'Password reset successfully!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 module.exports = router;
