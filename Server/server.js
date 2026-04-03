@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const mongoose = require('mongoose');
+const playlistsRoute = require('./routes/playlistsRoute');
 require('dotenv').config();
 
 const app = express();
@@ -23,6 +24,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/auth', require('./routes/auth'));
 app.use('/admin', require('./routes/admin'));
+app.use('/playlists', require('./routes/playlistsRoute'));
 
 // Test route
 app.get('/', (req, res) => {

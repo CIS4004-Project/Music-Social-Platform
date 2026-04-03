@@ -2,21 +2,32 @@ import React, { useState, useEffect } from 'react';
 import NotesBg from '../shared/NotesBg'; 
 import './Home.css';
 
+// eslint-disable-next-line
+const API = 'http://localhost:3001';
+
 const Home = ({ user, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [queue, setQueue] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  
+// --- Playlist State ---
   const [playlists, setPlaylists] = useState([]);
   const [playlistName, setPlaylistName] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [playlistsLoading, setPlaylistsLoading] = useState(true);
+  const [playlistsError, setPlaylistsError] = useState('');
+  const [saving, setSaving] = useState(false);
 
+
+  // --- Fetch User's Playlists from MongoDB ---
   useEffect(() => {
     if (!searchTerm.trim()) {
       setSearchResults([]);
       return;
     }
 
-    const delaySearch = setTimeout(async () => {
+  // --- Search Logic ---
+const searchMusic = setTimeout(async () => {
       try {
         const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`);
         const data = await res.json();
@@ -39,49 +50,95 @@ const Home = ({ user, onLogout }) => {
         console.error('Could not fetch songs', err);
         setSearchResults([]);
       }
-    }, 500); // Wait half a second
-
-    return () => clearTimeout(delaySearch);
+    }, 400); // Wait half a second
+    
+    return () => clearTimeout(searchMusic);
   }, [searchTerm]);
+  
+  //   --- Fetch User's Playlists from MongoDB ---
+  useEffect(() => {
+    if (!user?.username) return;
 
-  // --- Queue & Playlist Logic ---
+    const fetchPlaylists = async () => {
+      try {
+        const res = await fetch(`${API}/playlists/${user.username}`, { credentials: 'include' });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setPlaylists(data);
+      } catch {
+        setPlaylistsError('Could not load your playlists.');
+      } finally {
+        setPlaylistsLoading(false);
+      }
+    };
+    fetchPlaylists();
+  }, [user]);
+  
+  // --- Queue Logic ---
   const addToQueue = (song) => {
-    if (!queue.find(qSong => qSong.id === song.id)) {
-      setQueue((prevQueue) => [...prevQueue, song]);
+    if (!queue.find(q => q.id === song.id)) {
+      setQueue((prev) => [...prev, song]);
     }
   };
 
   const deleteFromQueue = (songId) => {
-    setQueue((prevQueue) => prevQueue.filter((song) => song.id !== songId));
+    setQueue((prev) => prev.filter(s => s.id !== songId));
   };
 
-  const finishPlaylist = () => {
+  // --- Save Playlist to MongoDB ---
+  const finishPlaylist = async () => {
     if (!playlistName.trim() || queue.length === 0) {
       alert("Please add a name and some songs to your queue first!");
       return;
     }
 
-    const newPlaylist = {
-      name: playlistName,
-      songs: [...queue],
-      id: Date.now() 
-    };
+    setSaving(true);
+    try {
+      const res = await fetch(`${API}/playlists`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: playlistName,
+          owner: user.username,
+          songs: queue,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const saved = await res.json();
+      setPlaylists(prev => [saved, ...prev]);
+      setShowModal(true);
+    } catch {
+      alert('Failed to save playlist. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
-    setPlaylists((prev) => [...prev, newPlaylist]);
-    setShowModal(true); 
+  // --- Delete Playlist from MongoDB ---
+  const deletePlaylist = async (playlistId) => {
+    if (!window.confirm('Delete this playlist?'))
+        return;
+    try {
+      const res = await fetch(`${API}/playlists/${playlistId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error();
+      setPlaylists(prev => prev.filter(pl => pl._id !== playlistId));
+    }
+    catch {
+      alert('Failed to delete playlist.');
+    }
   };
 
   const closeAndReset = () => {
     setShowModal(false);
-    setQueue([]); 
-    setPlaylistName(''); 
+    setQueue([]);
+    setPlaylistName('');
     setSearchTerm('');
   };
-
-  const deletePlaylist = (playlistId) => {
-    setPlaylists((prevPlaylists) => prevPlaylists.filter((pl) => pl.id !== playlistId));
-  };
-
+  
   return (
     <div className="home-wrapper">
       <NotesBg /> 
@@ -165,13 +222,13 @@ const Home = ({ user, onLogout }) => {
           <h2 style={{ marginTop: 0 }}>Your Saved Playlists</h2>
           {playlists.length > 0 ? (
             playlists.map((pl) => (
-              <div key={pl.id} className="saved-playlist">
+              <div key={pl._id} className="saved-playlist">
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                   <h3 className="brand-title" style={{fontSize: '1.3rem', textAlign: 'left', margin: 0}}>{pl.name}</h3>
                   <button 
                     className="btn-delete" 
-                    onClick={() => deletePlaylist(pl.id)} 
+                    onClick={() => deletePlaylist(pl._id)}
                     style={{ padding: '6px 12px', fontSize: '0.8rem' }}
                   >
                     Delete
