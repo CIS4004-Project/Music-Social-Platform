@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const API = "http://localhost:3001";
 
-function Login({ onLogin, onGoSignup }) {
+function Login({ onLogin, onGoSignup, onGoReset }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -19,14 +19,18 @@ function Login({ onLogin, onGoSignup }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ username:normalizedUsername, password }),
+        body: JSON.stringify({ username: normalizedUsername, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setMessage("✓ Logged in!");
-        setTimeout(() => onLogin({ username:normalizedUsername, isAdmin: data.isAdmin }), 800);
+        setTimeout(
+          () =>
+            onLogin({ username: normalizedUsername, isAdmin: data.isAdmin }),
+          800,
+        );
       } else {
         setMessage(data.message || "Login failed.");
         setLoading(false);
@@ -84,7 +88,7 @@ function Login({ onLogin, onGoSignup }) {
 
           <div className="auth-links">
             <button onClick={onGoSignup}>Sign Up</button>
-            <button>Reset Password</button>
+            <button onClick={onGoReset}>Reset Password</button>
           </div>
         </div>
       </div>
