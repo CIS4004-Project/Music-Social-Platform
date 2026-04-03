@@ -7,7 +7,7 @@ const Playlist = require('../models/playlists');
 // GET /playlists/:username — fetch all playlists for a user
 router.get('/:username', async (req, res) => {
   try {
-    const playlists = await Playlist.find({ owner: req.params.username }).sort({ createdAt: -1 });
+    const playlists = await Playlist.find({ username: req.params.username }).sort({ createdAt: -1 });
     res.json(playlists);
   } catch (err) {
     console.error(err);
@@ -17,14 +17,19 @@ router.get('/:username', async (req, res) => {
 
 // POST /playlists — create a new playlist
 router.post('/', async (req, res) => {
-  const { name, owner, songs } = req.body;
+  const { name, username, songs } = req.body;
 
-  if (!name || !owner || !songs?.length) {
-    return res.status(400).json({ message: 'Name, owner, and at least one song are required.' });
+  if (!name || !username || !songs?.length) {
+    return res.status(400).json({ message: 'Name, username, and at least one song are required.' });
   }
 
   try {
-    const playlist = new Playlist({ name, owner, songs });
+    const existing = await Playlist.findOne({ name, username });
+        if (existing) {
+        return res.status(409).json({ message: `You already have a playlist named "${name}".` });
+        }
+    
+    const playlist = new Playlist({ name, username, songs });
     await playlist.save();
     res.status(201).json(playlist);
   } catch (err) {

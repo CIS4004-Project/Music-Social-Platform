@@ -9,7 +9,7 @@ const PlaylistSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    owner: {
+    username: {
       type: String, // stores username
       required: true,
     },
@@ -24,7 +24,6 @@ const PlaylistSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
 );
 
 module.exports = mongoose.model('Playlist', PlaylistSchema);

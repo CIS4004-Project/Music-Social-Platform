@@ -100,17 +100,25 @@ const searchMusic = setTimeout(async () => {
         credentials: 'include',
         body: JSON.stringify({
           name: playlistName,
-          owner: user.username,
+          username: user.username,
           songs: queue,
         }),
       });
-      if (!res.ok) throw new Error();
-      const saved = await res.json();
-      setPlaylists(prev => [saved, ...prev]);
+      
+      const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message); // shows the specific error from the server
+      return;
+    }
+      
+      setPlaylists(prev => [data, ...prev]);
       setShowModal(true);
-    } catch {
+    }
+    catch {
       alert('Failed to save playlist. Please try again.');
-    } finally {
+    }
+    finally {
       setSaving(false);
     }
   };
@@ -177,7 +185,7 @@ const searchMusic = setTimeout(async () => {
                     <div className="song-info">
                       <p className="song-title">{song.title}</p>
                       <p className="song-artist">{song.artist}</p>
-                      <audio controls src={song.preview}></audio>
+                      <audio controls src={song.preview} onError={(e) => e.stopPropagation()}></audio>
                     </div>
                     <button className="btn-add" onClick={() => addToQueue(song)}>Add</button>
                   </div>
