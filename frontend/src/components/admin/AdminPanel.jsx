@@ -12,6 +12,12 @@ function AdminPanel({ user, onLogout }) {
   const [messageType, setMessageType] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [sortBy, setSortBy] = useState("username");
+    // --- Playlist State ---
+  const [playlists, setPlaylists] = useState([]);
+  const [playlistName, setPlaylistName] = useState('');
+  const [playlistsLoading, setPlaylistsLoading] = useState(true);
+  const [playlistsError, setPlaylistsError] = useState('');
+  
   const [createForm, setCreateForm] = useState({
     firstName: "",
     lastName: "",
@@ -58,6 +64,27 @@ function AdminPanel({ user, onLogout }) {
 
     setFilteredUsers(result);
   }, [search, users, sortBy]);
+  
+  // --- Fetch User's Playlists ---
+  useEffect(() => {
+    if (!selectedUser?.username)
+      return;
+    const fetchPlaylists = async () => {
+      try {
+        const res = await fetch(`${API}/playlists/${selectedUser.username}`, { credentials: 'include' });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setPlaylists(data);
+      }
+      catch {
+        setPlaylistsError('Could not load your playlists.');
+      }
+      finally {
+        setPlaylistsLoading(false);
+      }
+    };
+    fetchPlaylists();
+  }, [selectedUser]);
 
   const handleSelectUser = (u) => {
     setSelectedUser(u);
@@ -172,7 +199,23 @@ function AdminPanel({ user, onLogout }) {
     setMessageType(type);
     setTimeout(() => setMessage(""), 3000);
   };
-
+  // --- Delete Playlist from MongoDB ---
+  const deletePlaylist = async (playlistId) => {
+    if (!window.confirm('Delete this playlist?'))
+      return;
+    try {
+      const res = await fetch(`${API}/playlists/${playlistId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error();
+      setPlaylists(prev => prev.filter(pl => pl._id !== playlistId));
+    }
+    catch {
+      alert('Failed to delete playlist.');
+    }
+  };
+  
   return (
     <div className="admin-wrapper">
       {/* TOP NAV */}
@@ -361,20 +404,36 @@ function AdminPanel({ user, onLogout }) {
 
               {/* USER'S LIKED SONGS */}
               <h2 style={{ marginTop: "32px" }}>
-                {selectedUser.username}'s Liked Songs
+                {selectedUser.username}'s Playlists
               </h2>
 
-              <div className="admin-songs-grid">
-                {!selectedUser.songs || selectedUser.songs.length === 0 ? (
-                  <p className="no-songs">This user has no saved songs.</p>
-                ) : (
-                  selectedUser.songs.map((song, index) => (
-                    <div key={index} className="admin-song-card">
-                      {song.image && <img src={song.image} alt={song.title} />}
-                      <p className="song-title">{song.title}</p>
-                      <p className="song-artist">{song.artist}</p>
+                            <div className="admin-songs-grid">
+                {playlists.length > 0 ? (
+                  playlists.map((pl) => (
+                    <div key={pl._id} className="saved-playlist">
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                        <h3 className="brand-title" style={{ fontSize: '1.3rem', textAlign: 'left', margin: 0 }}>{pl.name}</h3>
+                        <button
+                          className="btn-delete"
+                          onClick={() => deletePlaylist(pl._id)}
+                          style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {pl.songs.map((song) => (
+                          <div key={song.id} style={{ padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.9rem' }}>
+                            <strong>{song.title}</strong> by {song.artist}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))
+                ) : (
+                  <p className="empty-text">No playlists saved yet.</p>
                 )}
               </div>
             </>
@@ -384,5 +443,4 @@ function AdminPanel({ user, onLogout }) {
     </div>
   );
 }
-
 export default AdminPanel;
