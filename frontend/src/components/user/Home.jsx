@@ -2,8 +2,54 @@ import React, { useState, useEffect } from 'react';
 import NotesBg from '../shared/NotesBg'; 
 import './Home.css';
 
-// eslint-disable-next-line
+
 const API = 'http://localhost:3001';
+
+// --- Artist Card Component ---
+const ArtistCard = ({ artist }) => {
+  const [expanded, setExpanded] = useState(null); // stores index of open playlist
+
+  const displayName = artist.firstName && artist.lastName
+    ? `${artist.firstName} ${artist.lastName}`
+    : artist.username;
+
+  return (
+    <div className="artist-card">
+      <div className="artist-avatar-fallback">
+        {displayName.charAt(0).toUpperCase()}
+      </div>
+      <div className="artist-info">
+        <p className="artist-name">{displayName}</p>
+        <p className="artist-username">@{artist.username}</p>
+
+        {artist.playlists?.length > 0 ? (
+          <div className="artist-playlists">
+            {artist.playlists.map((pl, i) => (
+              <div key={pl._id} className="artist-playlist-entry">
+                <button
+                  className="btn-playlist-toggle"
+                  onClick={() => setExpanded(expanded === i ? null : i)}
+                >
+                  🎵 {pl.name} {expanded === i ? '▲' : '▼'}
+                </button>
+                {expanded === i && (
+                  <ul className="playlist-songs">
+                    {pl.songs.map((song, j) => (
+                      <li key={j}>{song.title} <span>— {song.artist}</span></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="artist-no-playlist">No playlists yet</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 
 const Home = ({ user, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,61 +64,77 @@ const Home = ({ user, onLogout }) => {
   const [playlistsError, setPlaylistsError] = useState('');
   const [saving, setSaving] = useState(false);
 
+  // --- Featured Artists State ---
+  const [featuredArtists, setFeaturedArtists] = useState([]);
+  const [artistsLoading, setArtistsLoading] = useState(true);
+  const [artistsError, setArtistsError] = useState('');
 
-  // --- Fetch User's Playlists from MongoDB ---
+  // --- Fetch Featured Artists ---
   useEffect(() => {
-    if (!searchTerm.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-  // --- Search Logic ---
-const searchMusic = setTimeout(async () => {
+    const fetchFeaturedArtists = async () => {
       try {
-        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`);
+        const res = await fetch(`${API}/artists/featured`, { credentials: 'include' });
+        if (!res.ok) throw new Error();
         const data = await res.json();
-
-        if (data.results.length === 0) {
-          setSearchResults([]);
-          return;
-        }
-
-        const formattedResults = data.results.map((song) => ({
-          id: song.trackId,
-          title: song.trackName,
-          artist: song.artistName,
-          artwork: song.artworkUrl100,
-          preview: song.previewUrl
-        }));
-        
-        setSearchResults(formattedResults);
-      } catch (err) {
-        console.error('Could not fetch songs', err);
-        setSearchResults([]);
+        setFeaturedArtists(data);
+      } catch {
+        setArtistsError('Could not load featured artists.');
+      } finally {
+        setArtistsLoading(false);
       }
-    }, 400); // Wait half a second
-    
-    return () => clearTimeout(searchMusic);
-  }, [searchTerm]);
-  
-  //   --- Fetch User's Playlists from MongoDB ---
-  useEffect(() => {
-    if (!user?.username) return;
+    };
+    fetchFeaturedArtists();
+  }, []);
 
+  // --- Fetch User's Playlists ---
+  useEffect(() => {
+    if (!user?.username)
+        return;
     const fetchPlaylists = async () => {
       try {
         const res = await fetch(`${API}/playlists/${user.username}`, { credentials: 'include' });
         if (!res.ok) throw new Error();
         const data = await res.json();
         setPlaylists(data);
-      } catch {
+      }
+      catch {
         setPlaylistsError('Could not load your playlists.');
-      } finally {
+      }
+      finally {
         setPlaylistsLoading(false);
       }
     };
     fetchPlaylists();
   }, [user]);
+
+
+  // --- Search Logic ---
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`
+        );
+        const data = await res.json();
+        if (data.results.length === 0) { setSearchResults([]); return; }
+        setSearchResults(data.results.map((song) => ({
+          id: song.trackId,
+          title: song.trackName,
+          artist: song.artistName,
+          artwork: song.artworkUrl100,
+          preview: song.previewUrl,
+        })));
+      } catch {
+        setSearchResults([]);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+  
   
   // --- Queue Logic ---
   const addToQueue = (song) => {
@@ -84,6 +146,7 @@ const searchMusic = setTimeout(async () => {
   const deleteFromQueue = (songId) => {
     setQueue((prev) => prev.filter(s => s.id !== songId));
   };
+
 
   // --- Save Playlist to MongoDB ---
   const finishPlaylist = async () => {
@@ -160,6 +223,25 @@ const searchMusic = setTimeout(async () => {
           {onLogout && <button className="btn-delete logout-btn" onClick={onLogout}>Log Out</button>}
         </div>
       </header>
+      
+    {/* --- Featured Artists Section --- */}
+      <section className="featured-section">
+        <h2 className="featured-heading">Featured Artists</h2>
+
+        {artistsLoading && <p className="empty-text">Loading artists...</p>}
+        {!artistsLoading && artistsError && <p className="empty-text" style={{ color: '#ff6b6b' }}>{artistsError}</p>}
+        {!artistsLoading && !artistsError && featuredArtists.length === 0 && (
+          <p className="empty-text">No featured artists yet.</p>
+        )}
+        {!artistsLoading && !artistsError && featuredArtists.length > 0 && (
+          <div className="artists-grid">
+            {featuredArtists.map((artist) => (
+              <ArtistCard key={artist._id} artist={artist} />
+            ))}
+          </div>
+        )}
+      </section>
+      
       
       {/* --- Two-Column Layout --- */}
       <div className="dashboard-layout">

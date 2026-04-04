@@ -25,6 +25,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/auth', require('./routes/auth'));
 app.use('/admin', require('./routes/admin'));
 app.use('/playlists', require('./routes/playlistsRoute'));
+app.use('/artists', require('./routes/artistsRoute'));
 
 // Test route
 app.get('/', (req, res) => {
