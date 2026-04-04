@@ -60,6 +60,133 @@ body {
   100% { transform: translateY(110vh) rotate(15deg); opacity: 0; }
 }
 
+/* --- Featured Artists on Login & Home pages --- */
+.featured-section {
+  width: 100%;
+  max-width: 300px;
+  margin-top: 40px;
+  padding: 1%;
+  padding-right: 3%;
+}
+
+.featured-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-align: center;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--input-border);
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+}
+
+.artists-grid {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, minmax(1fr, 160px));
+  gap: 16px;
+}
+
+.artist-card {
+  background: var(--card-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 14px;
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.artist-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.artist-avatar-fallback {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple-dark), var(--purple-mid));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: white;
+}
+
+.artist-info { text-align: center; width: 100%; }
+.artist-name { font-weight: 700; font-size: 0.9rem; color: #fff; margin: 0 0 2px; }
+.artist-username { font-size: 0.78rem; color: var(--text-muted); margin: 0 0 8px; }
+.artist-no-playlist { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin: 0; }
+
+.artist-playlists { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+
+.btn-playlist-toggle {
+  background: transparent;
+  border: 1px solid var(--purple-light);
+  color: var(--purple-light);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-playlist-toggle:hover {
+  background: var(--purple-light);
+  color: white;
+}
+
+.playlist-songs {
+  list-style: none;
+  padding: 4px 0 0 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.playlist-songs li {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.7);
+  padding: 3px 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+}
+
+.playlist-songs li span { color: var(--text-muted); }
+
+.saved-playlists{
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+}
+
+.song-queue-title{
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-align: center;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--input-border);
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+}
+
 /* --- AUTH CARD --- */
 .auth-wrapper {
   position: relative;
@@ -74,12 +201,12 @@ body {
 
 .brand-title {
   font-family: 'Cinzel', serif;
-  font-size: 2.8rem;
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 450;
   color: var(--purple-light);
   text-shadow: 0 0 30px var(--purple-glow), 0 0 60px var(--purple-glow);
   margin-bottom: 40px;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
 }
 
 .auth-card {

@@ -275,7 +275,7 @@ const Home = ({ user, onLogout }) => {
               </div>
             </div>
             
-            <h2>Your Song Queue</h2>
+            <h2 className= "song-queue-title"> Your Song Queue</h2>
             <div className="input-group">
               <label htmlFor="playlistname">Playlist Name:</label>
               <input 
@@ -309,7 +309,7 @@ const Home = ({ user, onLogout }) => {
 
         {/* Right Side: Saved Playlists */}
         <aside className="dashboard-card side-panel">
-          <h2 style={{ marginTop: 0 }}>Your Saved Playlists</h2>
+          <h2 className="saved-playlists" style={{ marginTop: 0 }}>Your Saved Playlists</h2>
           {playlists.length > 0 ? (
             playlists.map((pl) => (
               <div key={pl._id} className="saved-playlist">
