@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import textLogo from '../Logos/transparent logo.png';
 
 const API = 'http://localhost:3001';
 
@@ -68,7 +69,7 @@ function Signup({ onSignup, onGoLogin }) {
   return (
     <>
       <div className="auth-wrapper">
-        <h1 className="brand-title">Audify</h1>
+        <img id="homeLogo" src={textLogo} alt="AudifyLogo"/>
 
         <div className="auth-card">
           <h2>Create Account</h2>
