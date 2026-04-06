@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./AdminPanel.css";
+import Logo from '../Logos/transparent no text logo.png';
 const API = "http://localhost:3001";
 
 function AdminPanel({ user, onLogout }) {
@@ -286,6 +287,7 @@ function AdminPanel({ user, onLogout }) {
     <div className="admin-wrapper">
       {/* TOP NAV */}
       <div className="admin-nav">
+        <img id="adminLogo" src={Logo} alt="AudifyLogo"/>
         <h1 className="admin-brand">Audify</h1>
         <div className="admin-nav-right">
           <span className="admin-welcome">👑 {user?.username}</span>
