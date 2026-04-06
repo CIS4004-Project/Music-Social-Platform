@@ -273,3 +273,6 @@ audio {
   max-width: 400px;
   box-shadow: 0 0 30px rgba(138, 43, 226, 0.4);
 }
+#homeLogo{
+  width: 100px;
+}
