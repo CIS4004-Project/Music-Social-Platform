@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NotesBg from '../shared/NotesBg'; 
 import './Home.css';
-import textLogo from '../Logos/transparent logo.png'; 
+import textLogo from '../Logos/transparent no text logo.png';
 
 const API = 'http://localhost:3001';
 
