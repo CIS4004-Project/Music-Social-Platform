@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./AdminPanel.css";
 import Logo from '../Logos/transparent no text logo.png';
+import NotesBg from '../shared/NotesBg'; // <-- Added NotesBg import
+
 const API = "http://localhost:3001";
 
 function AdminPanel({ user, onLogout }) {
@@ -115,7 +117,7 @@ function AdminPanel({ user, onLogout }) {
       email: u.email || "", username: u.username || "",
     });
     setMessage("");
-    cancelEditPlaylist(); // Close the playlist editor if they click a new user
+    cancelEditPlaylist(); 
   };
 
   const handleEditChange = (e) => {
@@ -210,7 +212,6 @@ function AdminPanel({ user, onLogout }) {
     setTimeout(() => setMessage(""), 3000);
   };
 
-  // --- Queue & Editor Functions ---
   const handleEditPlaylist = (playlist) => {
     setPlaylistName(playlist.name);
     setQueue(playlist.songs);
@@ -234,7 +235,6 @@ function AdminPanel({ user, onLogout }) {
     setQueue((prev) => prev.filter(s => s.id !== songId));
   };
 
-  // --- Save Edited Playlist to Database ---
   const saveEditedPlaylist = async () => {
     if (!playlistName.trim() || queue.length === 0) {
       showMessage("Please provide a name and add songs to the queue.", "error");
@@ -248,7 +248,7 @@ function AdminPanel({ user, onLogout }) {
         credentials: 'include',
         body: JSON.stringify({
           name: playlistName,
-          username: selectedUser.username, // Make sure it stays on the target user's account
+          username: selectedUser.username, 
           songs: queue,
         }),
       });
@@ -267,7 +267,6 @@ function AdminPanel({ user, onLogout }) {
     }
   };
 
-  // --- Delete Playlist ---
   const deletePlaylist = async (playlistId) => {
     if (!window.confirm('Delete this playlist permanently?')) return;
     try {
@@ -285,29 +284,30 @@ function AdminPanel({ user, onLogout }) {
   
   return (
     <div className="admin-wrapper">
-      {/* TOP NAV */}
-      <div className="admin-nav">
+      <NotesBg /> {/* Added Notes Background */}
+
+      {/* TOP NAV (Matches Home top-bar) */}
+      <header className="admin-nav">
         <img id="adminLogo" src={Logo} alt="AudifyLogo"/>
         <h1 className="admin-brand">Audify</h1>
         <div className="admin-nav-right">
           <span className="admin-welcome">👑 {user?.username}</span>
-          <button className="admin-logout-btn" onClick={onLogout}>
+          <button className="btn-delete admin-logout-btn" onClick={onLogout}>
             Log Out
           </button>
         </div>
-      </div>
+      </header>
 
       <div className="admin-body">
         {/* LEFT PANEL — USER LIST */}
-        <div className="admin-left">
+        <aside className="admin-left dashboard-card">
           <h2>Administrator View</h2>
           <p className="admin-subtitle">Welcome, {user?.username}!</p>
 
-          <div className="admin-search-bar">
-            <span>☰</span>
+          <div className="admin-search-bar input-group">
             <input
               type="text"
-              placeholder="Search for Users"
+              placeholder="Search for Users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -321,7 +321,7 @@ function AdminPanel({ user, onLogout }) {
             </select>
           </div>
 
-          <button className="btn-create-user" onClick={() => setShowCreateForm(!showCreateForm)}>
+          <button className="btn-save btn-create-user" onClick={() => setShowCreateForm(!showCreateForm)}>
             {showCreateForm ? "✕ Cancel" : "+ Create User"}
           </button>
 
@@ -337,7 +337,7 @@ function AdminPanel({ user, onLogout }) {
           )}
 
           <div className="admin-user-list">
-            {filteredUsers.length === 0 && <p className="no-users">No users found.</p>}
+            {filteredUsers.length === 0 && <p className="no-users empty-text">No users found.</p>}
             {filteredUsers.map((u) => (
               <div
                 key={u._id}
@@ -351,32 +351,32 @@ function AdminPanel({ user, onLogout }) {
               </div>
             ))}
           </div>
-        </div>
+        </aside>
 
         {/* RIGHT PANEL — SELECTED USER */}
-        <div className="admin-right">
+        <main className="admin-right dashboard-card">
           {!selectedUser ? (
             <div className="admin-placeholder">
-              <p>← Select a user to view their details</p>
+              <p className="empty-text">← Select a user to view their details</p>
             </div>
           ) : (
             <>
-              <h2>Selected User</h2>
+              <h2 style={{ marginTop: 0 }}>Selected User</h2>
 
               <div className="admin-form-grid">
-                <div className="admin-form-group">
+                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
                   <label>First Name</label>
                   <input type="text" name="firstName" value={editForm.firstName} onChange={handleEditChange} />
                 </div>
-                <div className="admin-form-group">
+                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
                   <label>Last Name</label>
                   <input type="text" name="lastName" value={editForm.lastName} onChange={handleEditChange} />
                 </div>
-                <div className="admin-form-group">
+                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
                   <label>Email</label>
                   <input type="email" name="email" value={editForm.email} onChange={handleEditChange} />
                 </div>
-                <div className="admin-form-group">
+                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
                   <label>Username</label>
                   <input type="text" name="username" value={editForm.username} onChange={handleEditChange} />
                 </div>
@@ -404,8 +404,7 @@ function AdminPanel({ user, onLogout }) {
                 <div className="admin-playlist-editor">
                   <h3 style={{ color: "hsl(265, 100%, 75%)", marginTop: 0 }}>Editing: {playlistName}</h3>
                   
-                  {/* iTunes Search for Admin */}
-                  <div className="admin-search-bar" style={{ background: "rgba(0,0,0,0.3)" }}>
+                  <div className="admin-search-bar input-group" style={{ background: "rgba(0,0,0,0.3)" }}>
                     <input 
                       type="text" 
                       placeholder="Search iTunes to add songs..." 
@@ -416,7 +415,7 @@ function AdminPanel({ user, onLogout }) {
                   
                   <div className="admin-editor-results">
                     {searchResults.map((song) => (
-                      <div key={song.id} className="admin-editor-song">
+                      <div key={song.id} className="admin-editor-song song-card" style={{ padding: '8px 12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                           <img src={song.artwork} alt={song.title} />
                           <div>
@@ -424,20 +423,19 @@ function AdminPanel({ user, onLogout }) {
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>{song.artist}</p>
                           </div>
                         </div>
-                        <button className="admin-btn-add" onClick={() => addToQueue(song)}>Add</button>
+                        <button className="btn-add" onClick={() => addToQueue(song)} style={{ padding: '6px 12px' }}>Add</button>
                       </div>
                     ))}
                   </div>
 
-                  {/* Queue Editor */}
-                  <div className="admin-form-group" style={{ marginBottom: "15px" }}>
+                  <div className="admin-form-group input-group" style={{ marginBottom: "15px" }}>
                     <label>Playlist Name</label>
                     <input type="text" value={playlistName} onChange={(e) => setPlaylistName(e.target.value)} />
                   </div>
 
                   <div className="admin-editor-queue">
                     {queue.map((song) => (
-                      <div key={song.id} className="admin-editor-song">
+                      <div key={song.id} className="admin-editor-song song-card" style={{ padding: '8px 12px' }}>
                         <div>
                           <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9rem' }}>{song.title}</p>
                           <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>{song.artist}</p>
@@ -448,7 +446,6 @@ function AdminPanel({ user, onLogout }) {
                     {queue.length === 0 && <p className="empty-text" style={{ fontSize: '0.9rem' }}>Queue is empty.</p>}
                   </div>
 
-                  {/* Save/Cancel Buttons */}
                   <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                     <button className="btn-save" style={{ flex: 1 }} onClick={saveEditedPlaylist} disabled={savingPlaylist}>
                       {savingPlaylist ? "Saving..." : "Save Playlist Updates"}
@@ -464,13 +461,13 @@ function AdminPanel({ user, onLogout }) {
                   <p className="empty-text">Loading playlists...</p>
                 ) : playlists.length > 0 ? (
                   playlists.map((pl) => (
-                    <div key={pl._id} className="saved-playlist" style={editingPlaylistId === pl._id ? { border: "2px solid hsl(265, 100%, 60%)" } : {}}>
+                    <div key={pl._id} className="saved-playlist" style={editingPlaylistId === pl._id ? { border: "2px solid hsl(265, 100%, 60%)", background: "rgba(25, 10, 40, 0.7)" } : {}}>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                        <h3 className="brand-title" style={{ fontSize: '1.3rem', textAlign: 'left', margin: 0 }}>{pl.name}</h3>
+                        <h3 className="admin-brand" style={{ fontSize: '1.3rem', textAlign: 'left', margin: 0 }}>{pl.name}</h3>
                         <div style={{ display: "flex", gap: "8px" }}>
                           <button
-                            className="admin-btn-add"
+                            className="btn-add"
                             onClick={() => handleEditPlaylist(pl)}
                             style={{ padding: '6px 12px', fontSize: '0.8rem' }}
                           >
@@ -501,7 +498,7 @@ function AdminPanel({ user, onLogout }) {
               </div>
             </>
           )}
-        </div>
+        </main>
       </div>
     </div>
   );

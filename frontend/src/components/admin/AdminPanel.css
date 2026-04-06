@@ -1,28 +1,46 @@
 /* --- ADMIN WRAPPER --- */
 .admin-wrapper {
-  min-height: 100vh;
   background-color: #05000a;
-  color: white;
-  font-family: "Nunito", sans-serif;
+  color: #ffffff;
+  font-family: sans-serif;
   display: flex;
   flex-direction: column;
+  padding: 140px 20px 40px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  position: relative; /* Keeps NotesBg correctly contained */
 }
 
-/* --- TOP NAV --- */
+/* --- TOP NAV (Mirrors Home .top-bar) --- */
 .admin-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
-  background: linear-gradient(90deg, hsl(265, 100%, 25%), hsl(265, 100%, 35%));
-  box-shadow: 0 2px 20px hsla(265, 100%, 20%, 0.6);
+  align-items: center;
+  padding: 15px 40px;
+  background-color: rgba(10, 5, 20, 0.85);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  box-sizing: border-box;
 }
 
 .admin-brand {
-  font-family: "Cinzel", serif;
-  font-size: 1.6rem;
-  color: white;
-  letter-spacing: 3px;
+  background: linear-gradient(45deg, hsl(265, 100%, 60%), hsl(280, 100%, 70%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-align: center;
+  font-size: 2.5rem;
+  margin: 0;
+  filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.4));
+  font-family: sans-serif;
+  font-weight: bold;
 }
 
 .admin-nav-right {
@@ -32,49 +50,55 @@
 }
 
 .admin-welcome {
-  font-size: 0.95rem;
+  font-weight: bold;
   color: rgba(255, 255, 255, 0.8);
-  font-weight: 600;
 }
 
 .admin-logout-btn {
-  padding: 8px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.admin-logout-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
 }
 
 /* --- BODY LAYOUT --- */
 .admin-body {
   display: grid;
   grid-template-columns: 380px 1fr;
-  flex: 1;
-  gap: 0;
+  gap: 30px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+  z-index: 5; /* Sit above the NotesBg */
+  position: relative;
 }
 
-/* --- LEFT PANEL --- */
-.admin-left {
-  background: #0d0015;
-  border-right: 1px solid hsl(265, 40%, 20%);
-  padding: 32px 24px;
-  min-height: calc(100vh - 70px);
+@media (max-width: 900px) {
+  .admin-body {
+    grid-template-columns: 1fr;
+  }
 }
 
-.admin-left h2 {
-  font-family: "Cinzel", serif;
-  font-size: 1.3rem;
-  font-weight: 400;
-  color: hsl(265, 100%, 75%);
-  margin-bottom: 4px;
+/* --- PANELS (Mirrors Home .dashboard-card) --- */
+.dashboard-card {
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid hsl(265, 40%, 20%);
+  box-shadow: 0 8px 32px rgba(138, 43, 226, 0.15);
+}
+
+/* Overrides for specific admin padding if needed */
+.admin-left, .admin-right {
+  padding: 30px;
+}
+
+/* Base Typo */
+h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid hsl(265, 40%, 30%);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .admin-subtitle {
@@ -83,29 +107,10 @@
   margin-bottom: 24px;
 }
 
-.admin-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid hsl(265, 40%, 30%);
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-
-.admin-search-bar input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.95rem;
-}
-
-.admin-search-bar input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+.empty-text, .no-users {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  text-align: left;
 }
 
 /* --- USER LIST --- */
@@ -113,8 +118,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: calc(100vh - 260px);
+  max-height: calc(100vh - 400px);
   overflow-y: auto;
+  padding-right: 5px;
 }
 
 .admin-user-item {
@@ -122,59 +128,77 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 20px;
-  background: hsl(265, 40%, 20%);
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1.5px solid transparent;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .admin-user-item:hover {
-  background: hsl(265, 50%, 28%);
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(5px);
   border-color: hsl(265, 100%, 50%);
 }
 
 .admin-user-item.active {
-  background: hsl(265, 60%, 30%);
+  background: rgba(138, 43, 226, 0.2);
   border-color: hsl(265, 100%, 65%);
   box-shadow: 0 0 12px hsla(265, 100%, 50%, 0.3);
 }
 
-.view-icon {
-  font-size: 1.1rem;
-  opacity: 0.7;
-}
-
-.no-users {
-  color: rgba(255, 255, 255, 0.3);
-  text-align: center;
-  padding: 20px;
-}
-
-/* --- RIGHT PANEL --- */
-.admin-right {
-  padding: 32px 40px;
-  overflow-y: auto;
-}
-
-.admin-right h2 {
-  font-family: "Cinzel", serif;
-  font-size: 1.2rem;
-  font-weight: 400;
-  color: hsl(265, 100%, 75%);
+/* --- INPUTS & FORMS --- */
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
   margin-bottom: 20px;
 }
 
-.admin-placeholder {
+.admin-form-group {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 1.1rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
 }
 
-/* --- EDIT FORM --- */
+.admin-form-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 2px solid hsl(265, 40%, 30%);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+input:focus {
+  border-color: hsl(265, 100%, 60%);
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-search-bar {
+  margin-bottom: 20px;
+}
+.admin-search-bar input {
+  width: 100%;
+}
+
 .admin-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -182,303 +206,110 @@
   margin-bottom: 24px;
 }
 
-.admin-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.admin-form-group label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.admin-form-group input {
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid hsl(265, 40%, 30%);
+/* --- BUTTONS --- */
+button {
+  cursor: pointer;
+  border: none;
   border-radius: 8px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.95rem;
-  outline: none;
+  font-weight: bold;
+  padding: 12px 20px;
   transition: all 0.3s ease;
-}
-
-.admin-form-group input:focus {
-  border-color: hsl(265, 100%, 60%);
-  box-shadow: 0 0 12px hsla(265, 100%, 50%, 0.3);
-}
-
-/* --- ACTION BUTTONS --- */
-.admin-actions {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 16px;
+  font-family: sans-serif;
 }
 
 .btn-save {
-  padding: 12px 28px;
-  background: linear-gradient(135deg, hsl(265, 100%, 35%), hsl(265, 100%, 55%));
-  border: none;
-  border-radius: 8px;
+  background: linear-gradient(45deg, hsl(265, 100%, 35%), hsl(265, 100%, 55%));
   color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  letter-spacing: 1px;
 }
 
 .btn-save:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px hsla(265, 100%, 50%, 0.4);
+  box-shadow: 0 8px 20px rgba(138, 43, 226, 0.5);
+}
+
+.btn-add {
+  background-color: transparent;
+  border: 1px solid hsl(265, 100%, 60%);
+  color: hsl(265, 100%, 60%);
+}
+
+.btn-add:hover {
+  background-color: hsl(265, 100%, 60%);
+  color: white;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
 }
 
 .btn-delete {
-  padding: 12px 28px;
-  background: linear-gradient(135deg, #8b0000, #cc0000);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 1px solid #e22134;
+  color: #e22134;
 }
 
 .btn-delete:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(200, 0, 0, 0.4);
+  background-color: #e22134;
+  color: white;
+  box-shadow: 0 0 10px rgba(226, 33, 52, 0.4);
 }
 
 .btn-create-user {
   width: 100%;
-  padding: 10px;
-  background: linear-gradient(135deg, hsl(265, 100%, 35%), hsl(265, 100%, 55%));
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
   margin-bottom: 16px;
-}
-
-.btn-create-user:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px hsla(265, 100%, 50%, 0.4);
-}
-
-.create-user-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid hsl(265, 40%, 25%);
-  border-radius: 10px;
-}
-
-.create-user-form input {
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid hsl(265, 40%, 30%);
-  border-radius: 8px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.9rem;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.create-user-form input:focus {
-  border-color: hsl(265, 100%, 60%);
-  box-shadow: 0 0 12px hsla(265, 100%, 50%, 0.3);
-}
-
-.create-user-form input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-/* --- MESSAGES --- */
-.admin-message {
-  font-size: 0.9rem;
-  padding: 10px 16px;
-  border-radius: 6px;
-  margin-top: 8px;
-}
-
-.admin-message.success {
-  color: #6bffb8;
-  background: rgba(107, 255, 184, 0.1);
-}
-
-.admin-message.error {
-  color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.1);
 }
 
 .btn-make-admin {
-  padding: 12px 28px;
-  background: linear-gradient(135deg, #1a6b1a, #2d9e2d);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 1px solid #2d9e2d;
+  color: #2d9e2d;
 }
-
 .btn-make-admin:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(45, 158, 45, 0.4);
+  background-color: #2d9e2d;
+  color: white;
+  box-shadow: 0 0 10px rgba(45, 158, 45, 0.4);
 }
 
 .btn-remove-admin {
-  padding: 12px 28px;
-  background: linear-gradient(135deg, #b8600a, #e07b0f);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 1px solid #e07b0f;
+  color: #e07b0f;
 }
-
 .btn-remove-admin:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(224, 123, 15, 0.4);
+  background-color: #e07b0f;
+  color: white;
+  box-shadow: 0 0 10px rgba(224, 123, 15, 0.4);
 }
 
-/* --- SONGS GRID --- */
-.admin-songs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
+.admin-actions {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.admin-song-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid hsl(265, 40%, 25%);
-  border-radius: 10px;
-  padding: 12px;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.admin-song-card:hover {
-  border-color: hsl(265, 100%, 50%);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.admin-song-card img {
-  width: 100%;
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
-
-.admin-song-card .song-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.admin-song-card .song-artist {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.no-songs {
-  color: rgba(255, 255, 255, 0.3);
-  grid-column: 1 / -1;
-}
-
-/* Sort bar */
-.sort-bar {
+/* --- SONGS & PLAYLISTS --- */
+.song-card {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.sort-btn {
-  padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid hsl(265, 40%, 30%);
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.5);
-  font-family: "Nunito", sans-serif;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sort-btn.active {
-  background: hsl(265, 60%, 30%);
-  border-color: hsl(265, 100%, 60%);
-  color: white;
-}
-
-.sort-btn:hover {
-  border-color: hsl(265, 100%, 50%);
-  color: white;
-}
-
-.sort-dropdown {
-  flex: 1;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid hsl(265, 40%, 30%);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  color: white;
-  font-family: "Nunito", sans-serif;
-  font-size: 0.85rem;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
+  padding: 15px;
+  gap: 15px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.sort-dropdown option {
-  background: #0d0015;
-  color: white;
+.song-card:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(5px);
 }
 
-/* Role badges */
-.role-badge {
-  font-size: 1rem;
+.song-card img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
-.role-badge.admin {
-  filter: drop-shadow(0 0 4px gold);
-}
-
-.role-badge.standard {
-  opacity: 0.7;
-}
-
-/* --- ADMIN PLAYLISTS --- */
 .admin-playlists-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -495,9 +326,8 @@
   flex-direction: column;
 }
 
-/* --- ADMIN PLAYLIST EDITOR --- */
 .admin-playlist-editor {
-  background: rgba(25, 10, 40, 0.4);
+  background: rgba(25, 10, 40, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid hsl(265, 100%, 50%);
   border-radius: 12px;
@@ -513,47 +343,87 @@
   margin-bottom: 20px;
   max-height: 250px;
   overflow-y: auto;
+  padding-right: 5px;
 }
 
-.admin-editor-song {
+/* --- MESSAGES --- */
+.admin-message {
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.admin-message.success {
+  color: #6bffb8;
+  background: rgba(107, 255, 184, 0.1);
+  border: 1px solid rgba(107, 255, 184, 0.3);
+}
+
+.admin-message.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* --- MISC UI ELEMENTS --- */
+.sort-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sort-dropdown {
+  flex: 1;
+  padding: 10px 12px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 14px;
+  border: 2px solid hsl(265, 40%, 30%);
   border-radius: 8px;
-  transition: background 0.2s ease;
-}
-
-.admin-editor-song:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.admin-editor-song img {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  margin-right: 12px;
-  object-fit: cover;
-}
-
-.admin-btn-add {
-  background: transparent;
-  border: 1px solid hsl(265, 100%, 60%);
-  color: hsl(265, 100%, 60%);
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: bold;
+  color: white;
+  font-family: sans-serif;
+  font-size: 0.9rem;
   cursor: pointer;
+  outline: none;
   transition: all 0.2s ease;
 }
 
-.admin-btn-add:hover {
-  background: hsl(265, 100%, 60%);
-  color: white;
-  box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+.sort-dropdown:focus {
+  border-color: hsl(265, 100%, 60%);
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
 }
-#adminLogo{
-  width:100px;
+
+.sort-dropdown option {
+  background: #0d0015;
+  color: white;
+}
+
+.role-badge {
+  font-size: 1.1rem;
+}
+
+.role-badge.admin {
+  filter: drop-shadow(0 0 4px gold);
+}
+
+.role-badge.standard {
+  opacity: 0.5;
+}
+
+.create-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid hsl(265, 40%, 25%);
+  border-radius: 10px;
+}
+
+#adminLogo {
+  width: 120px; /* Matched Home Logo size */
 }
