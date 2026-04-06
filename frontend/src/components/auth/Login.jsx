@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import textLogo from '../Logos/transparent logo.png';
+import textLogo from "../Logos/transparent logo.png";
 
 const API = "http://localhost:3001";
 
@@ -9,12 +9,13 @@ const FeaturedCarousel = ({ artists }) => {
   const [expandedPlaylist, setExpandedPlaylist] = useState(null);
   const timerRef = useRef(null);
 
-  const getIndex = (offset) => (current + offset + artists.length) % artists.length;
+  const getIndex = (offset) =>
+    (current + offset + artists.length) % artists.length;
 
   const resetTimer = () => {
     clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setCurrent(prev => (prev + 1) % artists.length);
+      setCurrent((prev) => (prev + 1) % artists.length);
       setExpandedPlaylist(null);
     }, 2000);
   };
@@ -29,52 +30,79 @@ const FeaturedCarousel = ({ artists }) => {
       ? `${artist.firstName} ${artist.lastName}`
       : artist.username;
 
-// ---Profile icon initials---
+  // ---Profile icon initials---
   const getInitials = (name) =>
-    name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    name
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
 
   const renderCard = (offsetIndex, role) => {
     const artist = artists[getIndex(offsetIndex)];
-    const isCenter = role === 'center';
+    const isCenter = role === "center";
     const displayName = getDisplayName(artist);
 
     const cardStyle = {
-      position: 'absolute',
-      left: '50%',
-      width: '200px',
+      position: "absolute",
+      left: "50%",
+      width: "200px",
       transform: isCenter
-        ? 'translateX(-50%) scale(1)'
-        : role === 'left'
-          ? 'translateX(calc(-50% - 140px)) scale(0.75)'
-          : 'translateX(calc(-50% + 140px)) scale(0.75)',
+        ? "translateX(-50%) scale(1)"
+        : role === "left"
+          ? "translateX(calc(-50% - 140px)) scale(0.75)"
+          : "translateX(calc(-50% + 140px)) scale(0.75)",
       opacity: isCenter ? 1 : 0.45,
       zIndex: isCenter ? 10 : 5,
-      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-      background: 'rgba(13, 0, 21, 0.85)',
-      border: `1px solid ${isCenter ? 'hsl(265, 100%, 65%)' : 'hsl(265, 40%, 30%)'}`,
-      borderRadius: '14px',
-      padding: '20px 14px',
-      textAlign: 'center',
-      pointerEvents: isCenter ? 'auto' : 'none',
-      boxSizing: 'border-box',
+      transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+      background: "rgba(13, 0, 21, 0.85)",
+      border: `1px solid ${isCenter ? "hsl(265, 100%, 65%)" : "hsl(265, 40%, 30%)"}`,
+      borderRadius: "14px",
+      padding: "20px 14px",
+      textAlign: "center",
+      pointerEvents: isCenter ? "auto" : "none",
+      boxSizing: "border-box",
     };
 
     return (
       <div key={role} style={cardStyle}>
-        <div style={{
-          width: '56px', height: '56px', borderRadius: '50%',
-          background: 'linear-gradient(135deg, hsl(265, 100%, 35%), hsl(265, 100%, 55%))',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '1.2rem', fontWeight: 'bold', color: 'white',
-          margin: '0 auto 10px',
-        }}>
+        <div
+          style={{
+            width: "56px",
+            height: "56px",
+            borderRadius: "50%",
+            background:
+              "linear-gradient(135deg, hsl(265, 100%, 35%), hsl(265, 100%, 55%))",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+            color: "white",
+            margin: "0 auto 10px",
+          }}
+        >
           {getInitials(displayName)}
         </div>
 
-        <p style={{ margin: '0 0 2px', fontWeight: 700, fontSize: '0.9rem', color: '#fff' }}>
+        <p
+          style={{
+            margin: "0 0 2px",
+            fontWeight: 700,
+            fontSize: "0.9rem",
+            color: "#fff",
+          }}
+        >
           {displayName}
         </p>
-        <p style={{ margin: '0 0 10px', fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)' }}>
+        <p
+          style={{
+            margin: "0 0 10px",
+            fontSize: "0.78rem",
+            color: "rgba(255,255,255,0.5)",
+          }}
+        >
           @{artist.username}
         </p>
       </div>
@@ -83,15 +111,23 @@ const FeaturedCarousel = ({ artists }) => {
 
   return (
     <div>
-      <div style={{ position: 'relative', width: '100%', height: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {renderCard(-1, 'left')}
-        {renderCard(0, 'center')}
-        {renderCard(1, 'right')}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "260px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {renderCard(-1, "left")}
+        {renderCard(0, "center")}
+        {renderCard(1, "right")}
       </div>
     </div>
   );
 };
-
 
 function Login({ onLogin, onGoSignup, onGoReset }) {
   const [username, setUsername] = useState("");
@@ -108,7 +144,9 @@ function Login({ onLogin, onGoSignup, onGoReset }) {
   useEffect(() => {
     const fetchFeaturedArtists = async () => {
       try {
-        const res = await fetch(`${API}/artists/featured`, { credentials: "include" });
+        const res = await fetch(`${API}/artists/featured`, {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error();
         const data = await res.json();
         setFeaturedArtists(data);
@@ -120,7 +158,6 @@ function Login({ onLogin, onGoSignup, onGoReset }) {
     };
     fetchFeaturedArtists();
   }, []);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,7 +195,7 @@ function Login({ onLogin, onGoSignup, onGoReset }) {
   return (
     <>
       <div className="auth-wrapper">
-        <img src={textLogo} style={{width:'250px'}} alt="AudifyLogo"/>
+        <img src={textLogo} style={{ width: "250px" }} alt="AudifyLogo" />
 
         <div className="auth-card">
           <h2>Welcome Back</h2>
@@ -205,23 +242,36 @@ function Login({ onLogin, onGoSignup, onGoReset }) {
             <button onClick={onGoReset}>Reset Password</button>
           </div>
         </div>
-      
-      
-    {/* --- Featured Artists Section --- */}
-      <section className="featured-section">
-        <h2 className="featured-heading">Featured Artists</h2>
-        {artistsLoading && <p className="empty-text" style={{ color: 'rgba(255,255,255,0.4)' }}>Loading artists...</p>}
-        {!artistsLoading && artistsError && (
-          <p className="empty-text" style={{ color: '#ff6b6b' }}>{artistsError}</p>
-        )}
-        {!artistsLoading && !artistsError && featuredArtists.length === 0 && (
-          <p className="empty-text" style={{ color: 'rgba(255,255,255,0.4)' }}>No featured artists yet.</p>
-        )}
-        {!artistsLoading && !artistsError && featuredArtists.length > 0 && (
+
+        {/* --- Featured Artists Section --- */}
+        <section className="featured-section" style={{ marginTop: "40px" }}>
+          <h2 className="featured-heading">Featured Artists</h2>
+          {artistsLoading && (
+            <p
+              className="empty-text"
+              style={{ color: "rgba(255,255,255,0.4)" }}
+            >
+              Loading artists...
+            </p>
+          )}
+          {!artistsLoading && artistsError && (
+            <p className="empty-text" style={{ color: "#ff6b6b" }}>
+              {artistsError}
+            </p>
+          )}
+          {!artistsLoading && !artistsError && featuredArtists.length === 0 && (
+            <p
+              className="empty-text"
+              style={{ color: "rgba(255,255,255,0.4)" }}
+            >
+              No featured artists yet.
+            </p>
+          )}
+          {!artistsLoading && !artistsError && featuredArtists.length > 0 && (
             <FeaturedCarousel artists={featuredArtists} />
-        )}
-      </section>
-    </div>
+          )}
+        </section>
+      </div>
     </>
   );
 }

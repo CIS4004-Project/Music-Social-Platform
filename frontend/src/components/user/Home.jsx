@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import NotesBg from '../shared/NotesBg'; 
-import './Home.css';
-import textLogo from '../Logos/transparent no text logo.png';
+import React, { useState, useEffect } from "react";
+import "./Home.css";
+import textLogo from "../Logos/transparent no text logo.png";
 
-const API = 'http://localhost:3001';
+const API = "http://localhost:3001";
 
 // --- Artist Card Component ---
 const ArtistCard = ({ artist }) => {
   const [expanded, setExpanded] = useState(null);
 
-  const displayName = artist.firstName && artist.lastName
-    ? `${artist.firstName} ${artist.lastName}`
-    : artist.username;
+  const displayName =
+    artist.firstName && artist.lastName
+      ? `${artist.firstName} ${artist.lastName}`
+      : artist.username;
 
   return (
     <div className="artist-card">
@@ -30,12 +30,14 @@ const ArtistCard = ({ artist }) => {
                   className="btn-playlist-toggle"
                   onClick={() => setExpanded(expanded === i ? null : i)}
                 >
-                  🎵 {pl.name} {expanded === i ? '▲' : '▼'}
+                  🎵 {pl.name} {expanded === i ? "▲" : "▼"}
                 </button>
                 {expanded === i && (
                   <ul className="playlist-songs">
                     {pl.songs.map((song, j) => (
-                      <li key={j}>{song.title} <span>— {song.artist}</span></li>
+                      <li key={j}>
+                        {song.title} <span>— {song.artist}</span>
+                      </li>
                     ))}
                   </ul>
                 )}
@@ -51,34 +53,36 @@ const ArtistCard = ({ artist }) => {
 };
 
 const Home = ({ user, onLogout }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [queue, setQueue] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  
+
   // --- Playlist State ---
   const [playlists, setPlaylists] = useState([]);
-  const [playlistName, setPlaylistName] = useState('');
+  const [playlistName, setPlaylistName] = useState("");
   const [playlistsLoading, setPlaylistsLoading] = useState(true);
-  const [playlistsError, setPlaylistsError] = useState('');
+  const [playlistsError, setPlaylistsError] = useState("");
   const [saving, setSaving] = useState(false);
   const [editingPlaylistId, setEditingPlaylistId] = useState(null);
 
   // --- Featured Artists State ---
   const [featuredArtists, setFeaturedArtists] = useState([]);
   const [artistsLoading, setArtistsLoading] = useState(true);
-  const [artistsError, setArtistsError] = useState('');
+  const [artistsError, setArtistsError] = useState("");
 
   // --- Fetch Featured Artists ---
   useEffect(() => {
     const fetchFeaturedArtists = async () => {
       try {
-        const res = await fetch(`${API}/artists/featured`, { credentials: 'include' });
+        const res = await fetch(`${API}/artists/featured`, {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error();
         const data = await res.json();
         setFeaturedArtists(data);
       } catch {
-        setArtistsError('Could not load featured artists.');
+        setArtistsError("Could not load featured artists.");
       } finally {
         setArtistsLoading(false);
       }
@@ -91,12 +95,14 @@ const Home = ({ user, onLogout }) => {
     if (!user?.username) return;
     const fetchPlaylists = async () => {
       try {
-        const res = await fetch(`${API}/playlists/${user.username}`, { credentials: 'include' });
+        const res = await fetch(`${API}/playlists/${user.username}`, {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error();
         const data = await res.json();
         setPlaylists(data);
       } catch {
-        setPlaylistsError('Could not load your playlists.');
+        setPlaylistsError("Could not load your playlists.");
       } finally {
         setPlaylistsLoading(false);
       }
@@ -113,33 +119,44 @@ const Home = ({ user, onLogout }) => {
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`
+          `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`,
         );
         const data = await res.json();
-        if (data.results.length === 0) { setSearchResults([]); return; }
-        setSearchResults(data.results.map((song) => ({
-          id: song.trackId,
-          title: song.trackName,
-          artist: song.artistName,
-          artwork: song.artworkUrl100,
-          preview: song.previewUrl,
-        })));
+        if (data.results.length === 0) {
+          setSearchResults([]);
+          return;
+        }
+        setSearchResults(
+          data.results.map((song) => ({
+            id: song.trackId,
+            title: song.trackName,
+            artist: song.artistName,
+            artwork: song.artworkUrl100,
+            preview: song.previewUrl,
+          })),
+        );
       } catch {
         setSearchResults([]);
       }
     }, 400);
     return () => clearTimeout(timer);
   }, [searchTerm]);
-  
+
   // --- Queue Logic ---
   const addToQueue = (song) => {
-    if (!queue.find(q => q.id === song.id)) {
+    if (!queue.find((q) => q.id === song.id)) {
       setQueue((prev) => [...prev, song]);
     }
   };
 
-  const deleteFromQueue = (songId) => {
-    setQueue((prev) => prev.filter(s => s.id !== songId));
+  const deleteFromQueue = (song) => {
+    setQueue((prev) =>
+      prev.filter((s) => {
+        const sid = s.id ?? s._id;
+        const targetId = song.id ?? song._id;
+        return sid !== targetId;
+      }),
+    );
   };
 
   // --- Edit Playlist Handlers ---
@@ -147,31 +164,35 @@ const Home = ({ user, onLogout }) => {
     setPlaylistName(playlist.name);
     setQueue(playlist.songs);
     setEditingPlaylistId(playlist._id);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const cancelEdit = () => {
     setEditingPlaylistId(null);
-    setPlaylistName('');
+    setPlaylistName("");
     setQueue([]);
   };
 
   // --- Save or Update Playlist to MongoDB ---
   const finishPlaylist = async () => {
-    if (!playlistName.trim() || queue.length === 0) {
-      alert("Please add a name and some songs to your queue first!");
+    if (!playlistName.trim()) {
+      alert("Please give your playlist a name first!");
+      return;
+    }
+    if (!editingPlaylistId && queue.length === 0) {
+      alert("Please add some songs to your queue first!");
       return;
     }
 
     setSaving(true);
     try {
       let res;
-      
+
       if (editingPlaylistId) {
         res = await fetch(`${API}/playlists/${editingPlaylistId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             name: playlistName,
             username: user.username,
@@ -180,9 +201,9 @@ const Home = ({ user, onLogout }) => {
         });
       } else {
         res = await fetch(`${API}/playlists`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             name: playlistName,
             username: user.username,
@@ -190,28 +211,32 @@ const Home = ({ user, onLogout }) => {
           }),
         });
       }
-      
+
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Failed to update playlist."); 
+        alert(data.message || "Failed to update playlist.");
         setSaving(false);
         return;
       }
-      
+
       if (editingPlaylistId) {
-        setPlaylists(prev => prev.map(pl => 
-          pl._id === editingPlaylistId 
-            ? { ...pl, name: playlistName, songs: queue } 
-            : pl
-        ));
+        setPlaylists((prev) =>
+          prev.map((pl) =>
+            pl._id === editingPlaylistId
+              ? { ...pl, name: playlistName, songs: queue }
+              : pl,
+          ),
+        );
       } else {
-        setPlaylists(prev => [data, ...prev]);
+        setPlaylists((prev) => [data, ...prev]);
       }
-      
+
       setShowModal(true);
     } catch {
-      alert(`Failed to ${editingPlaylistId ? 'update' : 'save'} playlist. Please try again.`);
+      alert(
+        `Failed to ${editingPlaylistId ? "update" : "save"} playlist. Please try again.`,
+      );
     } finally {
       setSaving(false);
     }
@@ -219,81 +244,93 @@ const Home = ({ user, onLogout }) => {
 
   // --- Delete Playlist from MongoDB ---
   const deletePlaylist = async (playlistId) => {
-    if (!window.confirm('Delete this playlist?')) return;
+    if (!window.confirm("Delete this playlist?")) return;
     try {
       const res = await fetch(`${API}/playlists/${playlistId}`, {
-        method: 'DELETE',
-        credentials: 'include',
+        method: "DELETE",
+        credentials: "include",
       });
       if (!res.ok) throw new Error();
-      setPlaylists(prev => prev.filter(pl => pl._id !== playlistId));
-      
+      setPlaylists((prev) => prev.filter((pl) => pl._id !== playlistId));
+
       if (editingPlaylistId === playlistId) {
         cancelEdit();
       }
     } catch {
-      alert('Failed to delete playlist.');
+      alert("Failed to delete playlist.");
     }
   };
 
   const closeAndReset = () => {
     setShowModal(false);
     setQueue([]);
-    setPlaylistName('');
-    setSearchTerm('');
+    setPlaylistName("");
+    setSearchTerm("");
     setEditingPlaylistId(null);
   };
-  
+
   return (
     <div className="home-wrapper">
-      <NotesBg /> 
-
       {/* --- Top Navigation Bar --- */}
       <header className="top-bar">
-        <img id="homeLogo" src={textLogo} alt="AudifyLogo"/>
-        <h1 className="brand-title" style={{ margin: 0, fontSize: '2rem' }}>Audify</h1>
-        
-        <div className="user-controls">
-          <span className="welcome-text">Welcome Back, {user?.username || 'Guest'}!</span>
-          {onLogout && <button className="btn-delete logout-btn" onClick={onLogout}>Log Out</button>}
+        <div className="nav-left">
+          <img id="homeLogo" src={textLogo} alt="AudifyLogo" />
+        </div>
+        <h1 className="brand">Audify</h1>
+        <div className="nav-right user-controls">
+          <span className="welcome-text">🎵 {user?.username || "Guest"}</span>
+          {onLogout && (
+            <button className="btn-delete logout-btn" onClick={onLogout}>
+              Log Out
+            </button>
+          )}
         </div>
       </header>
-      
-      {/* --- Featured Artists Section --- */}
-      <section className="featured-section">
-        <h2 className="featured-heading">Featured Artists</h2>
 
-        {artistsLoading && <p className="empty-text">Loading artists...</p>}
-        {!artistsLoading && artistsError && <p className="empty-text" style={{ color: '#ff6b6b' }}>{artistsError}</p>}
-        {!artistsLoading && !artistsError && featuredArtists.length === 0 && (
-          <p className="empty-text">No featured artists yet.</p>
-        )}
-        {!artistsLoading && !artistsError && featuredArtists.length > 0 && (
-          <div className="artists-grid">
-            {featuredArtists.map((artist) => (
-              <ArtistCard key={artist._id} artist={artist} />
-            ))}
-          </div>
-        )}
-      </section>
-      
-      {/* --- Two-Column Layout --- */}
+      {/* --- Three-Column Layout --- */}
       <div className="dashboard-layout">
-        
-        {/* Left Side: Search & Queue */}
+        {/* Left Column: Featured Artists */}
+        <aside className="dashboard-card featured-section">
+          <h2 className="featured-heading">Featured Artists</h2>
+
+          {artistsLoading && <p className="empty-text">Loading artists...</p>}
+          {!artistsLoading && artistsError && (
+            <p className="empty-text" style={{ color: "#ff6b6b" }}>
+              {artistsError}
+            </p>
+          )}
+          {!artistsLoading && !artistsError && featuredArtists.length === 0 && (
+            <p className="empty-text">No featured artists yet.</p>
+          )}
+          {!artistsLoading && !artistsError && featuredArtists.length > 0 && (
+            <div className="artists-grid">
+              {featuredArtists.map((artist) => (
+                <ArtistCard key={artist._id} artist={artist} />
+              ))}
+            </div>
+          )}
+        </aside>
+
+        {/* Center: Search & Queue */}
         <main className="dashboard-card main-panel">
           <div id="home-content">
+            <h2 className="song-queue-title">
+              {editingPlaylistId
+                ? `Editing: ${playlistName}`
+                : "Your Song Queue"}
+            </h2>
+
             <div id="search-section">
-              
+              <h2 className="search-heading">Search Songs</h2>
               <div id="search-bar">
-                <input 
-                  type="text" 
-                  placeholder="Search for songs..." 
-                  value={searchTerm} 
-                  onChange={(e) => setSearchTerm(e.target.value)} 
+                <input
+                  type="text"
+                  placeholder="Search for songs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              
+
               <div id="results">
                 {searchResults.map((song) => (
                   <div key={song.id} className="song-card">
@@ -301,26 +338,33 @@ const Home = ({ user, onLogout }) => {
                     <div className="song-info">
                       <p className="song-title">{song.title}</p>
                       <p className="song-artist">{song.artist}</p>
-                      <audio controls src={song.preview} onError={(e) => e.stopPropagation()}></audio>
+                      <audio
+                        controls
+                        src={song.preview}
+                        onError={(e) => e.stopPropagation()}
+                      ></audio>
                     </div>
-                    <button className="btn-add" onClick={() => addToQueue(song)}>Add</button>
+                    <button
+                      className="btn-add"
+                      onClick={() => addToQueue(song)}
+                    >
+                      Add
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
-            
-            <h2 className="song-queue-title">{editingPlaylistId ? `Editing: ${playlistName}` : 'Your Song Queue'}</h2>
             <div className="input-group">
               <label htmlFor="playlistname">Playlist Name:</label>
-              <input 
-                type="text" 
-                id="playlistname" 
-                value={playlistName} 
+              <input
+                type="text"
+                id="playlistname"
+                value={playlistName}
                 placeholder="E.g. Study Vibes"
                 onChange={(e) => setPlaylistName(e.target.value)}
               />
             </div>
-            
+
             <div id="queue">
               {queue.length > 0 ? (
                 queue.map((song) => (
@@ -329,70 +373,107 @@ const Home = ({ user, onLogout }) => {
                       <p className="song-title">{song.title}</p>
                       <p className="song-artist">{song.artist}</p>
                     </div>
-                    <button className="btn-delete" onClick={() => deleteFromQueue(song.id)}>Delete</button>
+                    <button
+                      className="btn-delete"
+                      onClick={() => deleteFromQueue(song)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 ))
               ) : (
-                <p className="empty-text">Your queue is empty. Search for songs to add!</p>
+                <p className="empty-text">
+                  Your queue is empty. Search for songs to add!
+                </p>
               )}
             </div>
-            
-            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-              <button 
-                className="btn-primary finish-btn" 
-                onClick={finishPlaylist} 
+
+            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+              <button
+                className="btn-primary finish-btn"
+                onClick={finishPlaylist}
                 disabled={saving}
                 style={{ flex: 1, marginTop: 0 }}
               >
-                {saving ? 'Saving...' : (editingPlaylistId ? 'Update Playlist' : 'Finish Playlist')}
+                {saving
+                  ? "Saving..."
+                  : editingPlaylistId
+                    ? "Update Playlist"
+                    : "Finish Playlist"}
               </button>
-              
+
               {editingPlaylistId && (
-                <button 
-                  className="btn-delete" 
+                <button
+                  className="btn-delete"
                   onClick={cancelEdit}
-                  style={{ padding: '15px', borderRadius: '8px' }}
+                  style={{ padding: "15px", borderRadius: "8px" }}
                 >
                   Cancel Edit
                 </button>
               )}
             </div>
-
           </div>
         </main>
 
         {/* Right Side: Saved Playlists */}
         <aside className="dashboard-card side-panel">
-          <h2 className="saved-playlists" style={{ marginTop: 0 }}>Your Saved Playlists</h2>
+          <h2 className="saved-playlists" style={{ marginTop: 0 }}>
+            Your Saved Playlists
+          </h2>
           {playlistsLoading ? (
             <p className="empty-text">Loading playlists...</p>
           ) : playlists.length > 0 ? (
             playlists.map((pl) => (
               <div key={pl._id} className="saved-playlist">
-                
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                  <h3 className="brand-title" style={{fontSize: '1.3rem', textAlign: 'left', margin: 0}}>{pl.name}</h3>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button 
-                      className="btn-add" 
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "15px",
+                  }}
+                >
+                  <h3
+                    className="brand-title"
+                    style={{ fontSize: "1.3rem", textAlign: "left", margin: 0 }}
+                  >
+                    {pl.name}
+                  </h3>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      className="btn-add"
                       onClick={() => handleEditPlaylist(pl)}
-                      style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                      style={{ padding: "6px 12px", fontSize: "0.8rem" }}
                     >
                       Edit
                     </button>
-                    <button 
-                      className="btn-delete" 
+                    <button
+                      className="btn-delete"
                       onClick={() => deletePlaylist(pl._id)}
-                      style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                      style={{ padding: "6px 12px", fontSize: "0.8rem" }}
                     >
                       Delete
                     </button>
                   </div>
                 </div>
 
-                <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                  }}
+                >
                   {pl.songs.map((song, idx) => (
-                    <div key={`${song.id}-${idx}`} style={{padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.9rem'}}>
+                    <div
+                      key={`${song.id}-${idx}`}
+                      style={{
+                        padding: "8px",
+                        backgroundColor: "rgba(255,255,255,0.05)",
+                        borderRadius: "6px",
+                        fontSize: "0.9rem",
+                      }}
+                    >
                       <strong>{song.title}</strong> by {song.artist}
                     </div>
                   ))}
@@ -403,16 +484,26 @@ const Home = ({ user, onLogout }) => {
             <p className="empty-text">No playlists saved yet.</p>
           )}
         </aside>
-
       </div>
 
       {/* --- Success Modal --- */}
       {showModal && (
         <div id="playlist-modal">
           <div className="modal-content">
-            <h2 style={{marginTop: 0, color: 'hsl(265, 100%, 70%)'}}>Playlist {editingPlaylistId ? 'Updated' : 'Saved'}!</h2>
-            <p>Your playlist <strong>{playlistName}</strong> has been {editingPlaylistId ? 'updated' : 'created'} successfully.</p>
-            <button className="btn-primary" onClick={closeAndReset} style={{width: '100%', marginTop: '15px'}}>Awesome!</button>
+            <h2 style={{ marginTop: 0, color: "hsl(265, 100%, 70%)" }}>
+              Playlist {editingPlaylistId ? "Updated" : "Saved"}!
+            </h2>
+            <p>
+              Your playlist <strong>{playlistName}</strong> has been{" "}
+              {editingPlaylistId ? "updated" : "created"} successfully.
+            </p>
+            <button
+              className="btn-primary"
+              onClick={closeAndReset}
+              style={{ width: "100%", marginTop: "15px" }}
+            >
+              Awesome!
+            </button>
           </div>
         </div>
       )}

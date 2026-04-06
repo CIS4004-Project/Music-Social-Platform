@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import textLogo from "../Logos/transparent logo.png";
 
 const API = "http://localhost:3001";
 
@@ -65,7 +66,7 @@ function ResetPassword({ onGoLogin }) {
 
   return (
     <div className="auth-wrapper">
-      <h1 className="brand-title">Audify</h1>
+      <img src={textLogo} style={{ width: "250px" }} alt="AudifyLogo" />
       <div className="auth-card">
         <h2>{step === 1 ? "Reset Password" : "New Password"}</h2>
 

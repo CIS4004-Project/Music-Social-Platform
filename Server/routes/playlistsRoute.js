@@ -38,6 +38,37 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PUT /playlists/:id — update an existing playlist
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, username, songs } = req.body;
+
+  if (!id || id === 'undefined') {
+    return res.status(400).json({ message: 'Invalid playlist ID.' });
+  }
+
+  if (!name || !username) {
+    return res.status(400).json({ message: 'Name and username are required.' });
+  }
+
+  try {
+    const playlist = await Playlist.findByIdAndUpdate(
+      id,
+      { name, songs: songs || [] },
+      { new: true }
+    );
+
+    if (!playlist) {
+      return res.status(404).json({ message: 'Playlist not found.' });
+    }
+
+    res.json(playlist);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update playlist.' });
+  }
+});
+
 // DELETE /playlists/:id — delete a playlist by its MongoDB _id
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;

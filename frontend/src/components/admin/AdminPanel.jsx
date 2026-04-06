@@ -1,36 +1,40 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./AdminPanel.css";
-import Logo from '../Logos/transparent no text logo.png';
-import NotesBg from '../shared/NotesBg'; // <-- Added NotesBg import
+import Logo from "../Logos/transparent no text logo.png";
+import NotesBg from "../shared/NotesBg"; // <-- Added NotesBg import
 
 const API = "http://localhost:3001";
 
 function AdminPanel({ user, onLogout }) {
-  const [users, setUsers] = useState([]); 
-  const [filteredUsers, setFilteredUsers] = useState([]); 
-  const [selectedUser, setSelectedUser] = useState(null); 
-  const [search, setSearch] = useState(""); 
-  const [editForm, setEditForm] = useState({}); 
-  const [message, setMessage] = useState(""); 
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [search, setSearch] = useState("");
+  const [editForm, setEditForm] = useState({});
+  const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [sortBy, setSortBy] = useState("username");
-  
+
   // --- Playlist States ---
   const [playlists, setPlaylists] = useState([]);
   const [playlistsLoading, setPlaylistsLoading] = useState(false);
-  const [playlistsError, setPlaylistsError] = useState('');
-  
+  const [playlistsError, setPlaylistsError] = useState("");
+
   // Playlist Editing States
   const [editingPlaylistId, setEditingPlaylistId] = useState(null);
-  const [playlistName, setPlaylistName] = useState('');
+  const [playlistName, setPlaylistName] = useState("");
   const [queue, setQueue] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [savingPlaylist, setSavingPlaylist] = useState(false);
 
   const [createForm, setCreateForm] = useState({
-    firstName: "", lastName: "", email: "", username: "", password: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    password: "",
   });
 
   const fetchUsers = useCallback(async () => {
@@ -66,19 +70,21 @@ function AdminPanel({ user, onLogout }) {
     }
     setFilteredUsers(result);
   }, [search, users, sortBy]);
-  
+
   // --- Fetch Selected User's Playlists ---
   useEffect(() => {
     if (!selectedUser?.username) return;
     setPlaylistsLoading(true);
     const fetchPlaylists = async () => {
       try {
-        const res = await fetch(`${API}/playlists/${selectedUser.username}`, { credentials: 'include' });
+        const res = await fetch(`${API}/playlists/${selectedUser.username}`, {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error();
         const data = await res.json();
         setPlaylists(data);
       } catch {
-        setPlaylistsError('Could not load user playlists.');
+        setPlaylistsError("Could not load user playlists.");
       } finally {
         setPlaylistsLoading(false);
       }
@@ -93,16 +99,23 @@ function AdminPanel({ user, onLogout }) {
     }
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`);
+        const res = await fetch(
+          `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&entity=song&limit=5`,
+        );
         const data = await res.json();
-        if (data.results.length === 0) { setSearchResults([]); return; }
-        setSearchResults(data.results.map((song) => ({
-          id: song.trackId,
-          title: song.trackName,
-          artist: song.artistName,
-          artwork: song.artworkUrl100,
-          preview: song.previewUrl,
-        })));
+        if (data.results.length === 0) {
+          setSearchResults([]);
+          return;
+        }
+        setSearchResults(
+          data.results.map((song) => ({
+            id: song.trackId,
+            title: song.trackName,
+            artist: song.artistName,
+            artwork: song.artworkUrl100,
+            preview: song.previewUrl,
+          })),
+        );
       } catch {
         setSearchResults([]);
       }
@@ -113,11 +126,13 @@ function AdminPanel({ user, onLogout }) {
   const handleSelectUser = (u) => {
     setSelectedUser(u);
     setEditForm({
-      firstName: u.firstName || "", lastName: u.lastName || "",
-      email: u.email || "", username: u.username || "",
+      firstName: u.firstName || "",
+      lastName: u.lastName || "",
+      email: u.email || "",
+      username: u.username || "",
     });
     setMessage("");
-    cancelEditPlaylist(); 
+    cancelEditPlaylist();
   };
 
   const handleEditChange = (e) => {
@@ -146,7 +161,12 @@ function AdminPanel({ user, onLogout }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete ${selectedUser.username}?`)) return;
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${selectedUser.username}?`,
+      )
+    )
+      return;
     try {
       const res = await fetch(`${API}/admin/users/${selectedUser._id}`, {
         method: "DELETE",
@@ -196,7 +216,13 @@ function AdminPanel({ user, onLogout }) {
       if (res.ok) {
         showMessage("✓ User created!", "success");
         setShowCreateForm(false);
-        setCreateForm({ firstName: "", lastName: "", email: "", username: "", password: "" });
+        setCreateForm({
+          firstName: "",
+          lastName: "",
+          email: "",
+          username: "",
+          password: "",
+        });
         fetchUsers();
       } else {
         showMessage(data.message || "Failed to create user.", "error");
@@ -220,19 +246,19 @@ function AdminPanel({ user, onLogout }) {
 
   const cancelEditPlaylist = () => {
     setEditingPlaylistId(null);
-    setPlaylistName('');
+    setPlaylistName("");
     setQueue([]);
-    setSearchTerm('');
+    setSearchTerm("");
   };
 
   const addToQueue = (song) => {
-    if (!queue.find(q => q.id === song.id)) {
+    if (!queue.find((q) => q.id === song.id)) {
       setQueue((prev) => [...prev, song]);
     }
   };
 
   const deleteFromQueue = (songId) => {
-    setQueue((prev) => prev.filter(s => s.id !== songId));
+    setQueue((prev) => prev.filter((s) => s.id !== songId));
   };
 
   const saveEditedPlaylist = async () => {
@@ -243,18 +269,24 @@ function AdminPanel({ user, onLogout }) {
     setSavingPlaylist(true);
     try {
       const res = await fetch(`${API}/playlists/${editingPlaylistId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           name: playlistName,
-          username: selectedUser.username, 
+          username: selectedUser.username,
           songs: queue,
         }),
       });
       const data = await res.json();
       if (res.ok) {
-        setPlaylists(prev => prev.map(pl => pl._id === editingPlaylistId ? { ...pl, name: playlistName, songs: queue } : pl));
+        setPlaylists((prev) =>
+          prev.map((pl) =>
+            pl._id === editingPlaylistId
+              ? { ...pl, name: playlistName, songs: queue }
+              : pl,
+          ),
+        );
         showMessage("✓ Playlist updated successfully!", "success");
         cancelEditPlaylist();
       } else {
@@ -268,28 +300,29 @@ function AdminPanel({ user, onLogout }) {
   };
 
   const deletePlaylist = async (playlistId) => {
-    if (!window.confirm('Delete this playlist permanently?')) return;
+    if (!window.confirm("Delete this playlist permanently?")) return;
     try {
       const res = await fetch(`${API}/playlists/${playlistId}`, {
-        method: 'DELETE',
-        credentials: 'include',
+        method: "DELETE",
+        credentials: "include",
       });
       if (!res.ok) throw new Error();
-      setPlaylists(prev => prev.filter(pl => pl._id !== playlistId));
+      setPlaylists((prev) => prev.filter((pl) => pl._id !== playlistId));
       if (editingPlaylistId === playlistId) cancelEditPlaylist();
     } catch {
       showMessage("Failed to delete playlist.", "error");
     }
   };
-  
+
   return (
     <div className="admin-wrapper">
       <NotesBg /> {/* Added Notes Background */}
-
       {/* TOP NAV (Matches Home top-bar) */}
       <header className="admin-nav">
-        <img id="adminLogo" src={Logo} alt="AudifyLogo"/>
-        <h1 className="admin-brand">Audify</h1>
+        <div className="nav-left">
+          <img id="adminLogo" src={Logo} alt="AudifyLogo" />
+        </div>
+        <h1 className="brand">Audify</h1>
         <div className="admin-nav-right">
           <span className="admin-welcome">👑 {user?.username}</span>
           <button className="btn-delete admin-logout-btn" onClick={onLogout}>
@@ -297,11 +330,12 @@ function AdminPanel({ user, onLogout }) {
           </button>
         </div>
       </header>
-
       <div className="admin-body">
         {/* LEFT PANEL — USER LIST */}
         <aside className="admin-left dashboard-card">
-          <h2>Administrator View</h2>
+          <h2 className="featured-heading" style={{ marginTop: 0 }}>
+            Administrator View
+          </h2>
           <p className="admin-subtitle">Welcome, {user?.username}!</p>
 
           <div className="admin-search-bar input-group">
@@ -315,29 +349,71 @@ function AdminPanel({ user, onLogout }) {
 
           <div className="sort-bar">
             <label>Sort by:</label>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-dropdown">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="sort-dropdown"
+            >
               <option value="username">Alphabetical</option>
               <option value="created">Date Created</option>
             </select>
           </div>
 
-          <button className="btn-save btn-create-user" onClick={() => setShowCreateForm(!showCreateForm)}>
+          <button
+            className="btn-save btn-create-user"
+            onClick={() => setShowCreateForm(!showCreateForm)}
+          >
             {showCreateForm ? "✕ Cancel" : "+ Create User"}
           </button>
 
           {showCreateForm && (
             <div className="create-user-form">
-              <input placeholder="First Name" value={createForm.firstName} onChange={(e) => setCreateForm({ ...createForm, firstName: e.target.value })} />
-              <input placeholder="Last Name" value={createForm.lastName} onChange={(e) => setCreateForm({ ...createForm, lastName: e.target.value })} />
-              <input placeholder="Email" value={createForm.email} onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })} />
-              <input placeholder="Username" value={createForm.username} onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })} />
-              <input type="password" placeholder="Password" value={createForm.password} onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })} />
-              <button className="btn-save" onClick={handleCreateUser}>Create User</button>
+              <input
+                placeholder="First Name"
+                value={createForm.firstName}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, firstName: e.target.value })
+                }
+              />
+              <input
+                placeholder="Last Name"
+                value={createForm.lastName}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, lastName: e.target.value })
+                }
+              />
+              <input
+                placeholder="Email"
+                value={createForm.email}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, email: e.target.value })
+                }
+              />
+              <input
+                placeholder="Username"
+                value={createForm.username}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, username: e.target.value })
+                }
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={createForm.password}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, password: e.target.value })
+                }
+              />
+              <button className="btn-save" onClick={handleCreateUser}>
+                Create User
+              </button>
             </div>
           )}
 
           <div className="admin-user-list">
-            {filteredUsers.length === 0 && <p className="no-users empty-text">No users found.</p>}
+            {filteredUsers.length === 0 && (
+              <p className="no-users empty-text">No users found.</p>
+            )}
             {filteredUsers.map((u) => (
               <div
                 key={u._id}
@@ -345,7 +421,12 @@ function AdminPanel({ user, onLogout }) {
                 onClick={() => handleSelectUser(u)}
               >
                 <span>{u.username}</span>
-                <span className={u.isAdmin ? "role-badge admin" : "role-badge standard"} title={u.isAdmin ? "Administrator" : "Standard User"}>
+                <span
+                  className={
+                    u.isAdmin ? "role-badge admin" : "role-badge standard"
+                  }
+                  title={u.isAdmin ? "Administrator" : "Standard User"}
+                >
                   {u.isAdmin ? "👑" : "🎵"}
                 </span>
               </div>
@@ -357,37 +438,80 @@ function AdminPanel({ user, onLogout }) {
         <main className="admin-right dashboard-card">
           {!selectedUser ? (
             <div className="admin-placeholder">
-              <p className="empty-text">← Select a user to view their details</p>
+              <p className="empty-text">
+                ← Select a user to view their details
+              </p>
             </div>
           ) : (
             <>
               <h2 style={{ marginTop: 0 }}>Selected User</h2>
 
               <div className="admin-form-grid">
-                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
+                <div
+                  className="admin-form-group input-group"
+                  style={{ marginBottom: 0 }}
+                >
                   <label>First Name</label>
-                  <input type="text" name="firstName" value={editForm.firstName} onChange={handleEditChange} />
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={editForm.firstName}
+                    onChange={handleEditChange}
+                  />
                 </div>
-                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
+                <div
+                  className="admin-form-group input-group"
+                  style={{ marginBottom: 0 }}
+                >
                   <label>Last Name</label>
-                  <input type="text" name="lastName" value={editForm.lastName} onChange={handleEditChange} />
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={editForm.lastName}
+                    onChange={handleEditChange}
+                  />
                 </div>
-                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
+                <div
+                  className="admin-form-group input-group"
+                  style={{ marginBottom: 0 }}
+                >
                   <label>Email</label>
-                  <input type="email" name="email" value={editForm.email} onChange={handleEditChange} />
+                  <input
+                    type="email"
+                    name="email"
+                    value={editForm.email}
+                    onChange={handleEditChange}
+                  />
                 </div>
-                <div className="admin-form-group input-group" style={{ marginBottom: 0 }}>
+                <div
+                  className="admin-form-group input-group"
+                  style={{ marginBottom: 0 }}
+                >
                   <label>Username</label>
-                  <input type="text" name="username" value={editForm.username} onChange={handleEditChange} />
+                  <input
+                    type="text"
+                    name="username"
+                    value={editForm.username}
+                    onChange={handleEditChange}
+                  />
                 </div>
               </div>
 
               <div className="admin-actions">
-                <button className="btn-save" onClick={handleUpdate}>Save Changes</button>
-                <button className={selectedUser.isAdmin ? "btn-remove-admin" : "btn-make-admin"} onClick={handleToggleAdmin}>
+                <button className="btn-save" onClick={handleUpdate}>
+                  Save Changes
+                </button>
+                <button
+                  className={
+                    selectedUser.isAdmin ? "btn-remove-admin" : "btn-make-admin"
+                  }
+                  onClick={handleToggleAdmin}
+                >
                   {selectedUser.isAdmin ? "Remove Admin" : "Make Admin"}
                 </button>
-                <button className="btn-delete" onClick={handleDelete}>Delete User</button>
+                <button className="btn-delete" onClick={handleDelete}>
+                  Delete User
+                </button>
               </div>
 
               {message && (
@@ -402,55 +526,132 @@ function AdminPanel({ user, onLogout }) {
               {/* POP-UP PLAYLIST EDITOR */}
               {editingPlaylistId && (
                 <div className="admin-playlist-editor">
-                  <h3 style={{ color: "hsl(265, 100%, 75%)", marginTop: 0 }}>Editing: {playlistName}</h3>
-                  
-                  <div className="admin-search-bar input-group" style={{ background: "rgba(0,0,0,0.3)" }}>
-                    <input 
-                      type="text" 
-                      placeholder="Search iTunes to add songs..." 
-                      value={searchTerm} 
-                      onChange={(e) => setSearchTerm(e.target.value)} 
+                  <h3 style={{ color: "hsl(265, 100%, 75%)", marginTop: 0 }}>
+                    Editing: {playlistName}
+                  </h3>
+
+                  <div
+                    className="admin-search-bar input-group"
+                    style={{ background: "rgba(0,0,0,0.3)" }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search iTunes to add songs..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="admin-editor-results">
                     {searchResults.map((song) => (
-                      <div key={song.id} className="admin-editor-song song-card" style={{ padding: '8px 12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div
+                        key={song.id}
+                        className="admin-editor-song song-card"
+                        style={{ padding: "8px 12px" }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <img src={song.artwork} alt={song.title} />
                           <div>
-                            <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9rem' }}>{song.title}</p>
-                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>{song.artist}</p>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontWeight: "bold",
+                                fontSize: "0.9rem",
+                              }}
+                            >
+                              {song.title}
+                            </p>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: "0.8rem",
+                                color: "rgba(255,255,255,0.5)",
+                              }}
+                            >
+                              {song.artist}
+                            </p>
                           </div>
                         </div>
-                        <button className="btn-add" onClick={() => addToQueue(song)} style={{ padding: '6px 12px' }}>Add</button>
+                        <button
+                          className="btn-add"
+                          onClick={() => addToQueue(song)}
+                          style={{ padding: "6px 12px" }}
+                        >
+                          Add
+                        </button>
                       </div>
                     ))}
                   </div>
 
-                  <div className="admin-form-group input-group" style={{ marginBottom: "15px" }}>
+                  <div
+                    className="admin-form-group input-group"
+                    style={{ marginBottom: "15px" }}
+                  >
                     <label>Playlist Name</label>
-                    <input type="text" value={playlistName} onChange={(e) => setPlaylistName(e.target.value)} />
+                    <input
+                      type="text"
+                      value={playlistName}
+                      onChange={(e) => setPlaylistName(e.target.value)}
+                    />
                   </div>
 
                   <div className="admin-editor-queue">
                     {queue.map((song) => (
-                      <div key={song.id} className="admin-editor-song song-card" style={{ padding: '8px 12px' }}>
+                      <div
+                        key={song.id}
+                        className="admin-editor-song song-card"
+                        style={{ padding: "8px 12px" }}
+                      >
                         <div>
-                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.9rem' }}>{song.title}</p>
-                          <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>{song.artist}</p>
+                          <p
+                            style={{
+                              margin: 0,
+                              fontWeight: "bold",
+                              fontSize: "0.9rem",
+                            }}
+                          >
+                            {song.title}
+                          </p>
+                          <p
+                            style={{
+                              margin: 0,
+                              fontSize: "0.8rem",
+                              color: "rgba(255,255,255,0.5)",
+                            }}
+                          >
+                            {song.artist}
+                          </p>
                         </div>
-                        <button className="btn-delete" style={{ padding: "4px 8px", fontSize: "0.8rem" }} onClick={() => deleteFromQueue(song.id)}>Remove</button>
+                        <button
+                          className="btn-delete"
+                          style={{ padding: "4px 8px", fontSize: "0.8rem" }}
+                          onClick={() => deleteFromQueue(song.id)}
+                        >
+                          Remove
+                        </button>
                       </div>
                     ))}
-                    {queue.length === 0 && <p className="empty-text" style={{ fontSize: '0.9rem' }}>Queue is empty.</p>}
+                    {queue.length === 0 && (
+                      <p className="empty-text" style={{ fontSize: "0.9rem" }}>
+                        Queue is empty.
+                      </p>
+                    )}
                   </div>
 
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                    <button className="btn-save" style={{ flex: 1 }} onClick={saveEditedPlaylist} disabled={savingPlaylist}>
+                  <div
+                    style={{ display: "flex", gap: "10px", marginTop: "20px" }}
+                  >
+                    <button
+                      className="btn-save"
+                      style={{ flex: 1 }}
+                      onClick={saveEditedPlaylist}
+                      disabled={savingPlaylist}
+                    >
                       {savingPlaylist ? "Saving..." : "Save Playlist Updates"}
                     </button>
-                    <button className="btn-delete" onClick={cancelEditPlaylist}>Cancel</button>
+                    <button className="btn-delete" onClick={cancelEditPlaylist}>
+                      Cancel
+                    </button>
                   </div>
                 </div>
               )}
@@ -461,31 +662,71 @@ function AdminPanel({ user, onLogout }) {
                   <p className="empty-text">Loading playlists...</p>
                 ) : playlists.length > 0 ? (
                   playlists.map((pl) => (
-                    <div key={pl._id} className="saved-playlist" style={editingPlaylistId === pl._id ? { border: "2px solid hsl(265, 100%, 60%)", background: "rgba(25, 10, 40, 0.7)" } : {}}>
-
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                        <h3 className="admin-brand" style={{ fontSize: '1.3rem', textAlign: 'left', margin: 0 }}>{pl.name}</h3>
+                    <div
+                      key={pl._id}
+                      className="saved-playlist"
+                      style={
+                        editingPlaylistId === pl._id
+                          ? {
+                              border: "2px solid hsl(265, 100%, 60%)",
+                              background: "rgba(25, 10, 40, 0.7)",
+                            }
+                          : {}
+                      }
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "15px",
+                        }}
+                      >
+                        <h3
+                          className="admin-brand"
+                          style={{
+                            fontSize: "1.3rem",
+                            textAlign: "left",
+                            margin: 0,
+                          }}
+                        >
+                          {pl.name}
+                        </h3>
                         <div style={{ display: "flex", gap: "8px" }}>
                           <button
                             className="btn-add"
                             onClick={() => handleEditPlaylist(pl)}
-                            style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                            style={{ padding: "6px 12px", fontSize: "0.8rem" }}
                           >
                             Edit
                           </button>
                           <button
                             className="btn-delete"
                             onClick={() => deletePlaylist(pl._id)}
-                            style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                            style={{ padding: "6px 12px", fontSize: "0.8rem" }}
                           >
                             Delete
                           </button>
                         </div>
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "8px",
+                        }}
+                      >
                         {pl.songs.map((song, idx) => (
-                          <div key={`${song.id}-${idx}`} style={{ padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '6px', fontSize: '0.9rem' }}>
+                          <div
+                            key={`${song.id}-${idx}`}
+                            style={{
+                              padding: "8px",
+                              backgroundColor: "rgba(255,255,255,0.05)",
+                              borderRadius: "6px",
+                              fontSize: "0.9rem",
+                            }}
+                          >
                             <strong>{song.title}</strong> by {song.artist}
                           </div>
                         ))}
