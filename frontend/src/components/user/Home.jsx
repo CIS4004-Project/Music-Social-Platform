@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NotesBg from '../shared/NotesBg'; 
 import './Home.css';
+import textLogo from '../Logos/transparent no text logo.png';
 
 const API = 'http://localhost:3001';
 
@@ -249,6 +250,7 @@ const Home = ({ user, onLogout }) => {
 
       {/* --- Top Navigation Bar --- */}
       <header className="top-bar">
+        <img id="homeLogo" src={textLogo} alt="AudifyLogo"/>
         <h1 className="brand-title" style={{ margin: 0, fontSize: '2rem' }}>Audify</h1>
         
         <div className="user-controls">
