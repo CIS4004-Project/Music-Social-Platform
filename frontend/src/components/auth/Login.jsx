@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import textLogo from '../Logos/transparent logo.png';
 
 const API = "http://localhost:3001";
 
@@ -157,7 +158,7 @@ function Login({ onLogin, onGoSignup, onGoReset }) {
   return (
     <>
       <div className="auth-wrapper">
-        <h1 className="brand-title">Audify</h1>
+        <img id="homeLogo" src={textLogo} alt="AudifyLogo"/>
 
         <div className="auth-card">
           <h2>Welcome Back</h2>
