@@ -69,7 +69,7 @@ function Signup({ onSignup, onGoLogin }) {
   return (
     <>
       <div className="auth-wrapper">
-        <img id="homeLogo" src={textLogo} alt="AudifyLogo"/>
+        <img src={textLogo} style={{width:'250px'}}  alt="AudifyLogo"/>
 
         <div className="auth-card">
           <h2>Create Account</h2>
