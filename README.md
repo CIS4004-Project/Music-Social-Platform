@@ -1,6 +1,6 @@
 <div align="center">
-  <h1>Music-Social-Platform</h1>
-  <p>(Brief Description of the Project)</p>
+  <h1>Audify - A Music Social Platform</h1>
+  <p>A music social platform where users can search for songs, build and save playlists, and discover featured artists and their playlists.</p>
 </div>
 
 ## 📝 Team Members
@@ -18,6 +18,28 @@
 - **Database:** MongoDB Atlas
 - **ODM:** Mongoose
 - **Auth:** bcrypt, express-session
+
+## 🗄 Database Structure
+
+This project uses **MongoDB Compass**. The following collections are required:
+
+- **users** — stores user accounts. Each document contains:
+  - `_id` (Object Id), `username`, `password`, `isAdmin` (boolean), `firstName`, `lastName`, `email`, `isFeatured`, `__v`
+
+- **playlists** — stores user-created playlists. Each document contains:
+  - `_id`, `name`, `username` (owner), `songs` (array of song objects), `__v`
+
+
+
+### 💻 Operating System Notes
+
+**Mac users** use the built-in **Terminal** app for all commands below.
+
+**Windows users** can use **Command Prompt** or **PowerShell** — all commands in this guide are compatible with both.
+
+> If you use Windows Command Prompt or PowerShell — some commands like `cd ..` and `npm start` may behave differently than intended. In this case, users ** should use **Git Bash**, which is installed automatically when you install [Git for Windows](https://git-scm.com/download/win). All commands in this guide are the same for both Mac and Windows when using Git Bash.
+
+---
 
 ## ⚙️ Getting Started
 
@@ -43,7 +65,7 @@ Both should print version numbers.
 **1. Open the Terminal on Mac. Clone the repository:**
 
 ```bash
-git clone https://github.com/Devaloupe/Music-Social-Platform.git
+git clone https://github.com/CIS4004-Project/Music-Social-Platform.git
 cd Music-Social-Platform
 ```
 
@@ -63,8 +85,15 @@ cd ..
 
 **4. Ensure the `.env` file, that you created earlier is in the root of the project folder**
 
-> The file extension **MUST** be '.env', otherwise the server will not run. This file is your root credential into the MongoDB database.
+> The file extension **MUST** be '.env', otherwise the server will not run. This hidden file is your root credential into the MongoDB database.
 > The '.env' file should never be pushed to GitHub due to security reasons.  In which case, please contact one of the repository owners or contributors to receive the `.env` contents, then create the file manually on your device.
+
+Your `.env` file should contain the following:
+
+```
+MONGO_URI=your_mongodb_connection_string
+SESSION_SECRET=your_secret_here
+```
 
 ---
 
@@ -103,13 +132,13 @@ React will automatically open your browser at `http://localhost:3000`
 
 ### Usage after Initial Installation
 
-**1. Open a Terminal Window on Mac, direct 'bash' to the Project Folder:**
+**1. Open a Terminal Window on Mac, and navigate to the Project Folder:**
 
 ```bash
 cd Music-Social-Platform
 ```
 
-**2. Ensure the `.env` file, that you created earlier is in the root of the project folder**
+**2. Ensure your `.env` file, that you created earlier, is in the root of the project folder**
 
 > The file extension **MUST** be '.env', otherwise the server will not run. This file is your root credential into the MongoDB database.
 

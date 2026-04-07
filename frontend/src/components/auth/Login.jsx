@@ -147,12 +147,14 @@ function Login({ onLogin, onGoSignup, onGoReset }) {
         const res = await fetch(`${API}/artists/featured`, {
           credentials: "include",
         });
-        if (!res.ok) throw new Error();
+        if (!res.ok)
+            throw new Error();
         const data = await res.json();
         setFeaturedArtists(data);
       } catch {
         setArtistsError("Could not load featured artists.");
-      } finally {
+      }
+      finally {
         setArtistsLoading(false);
       }
     };
@@ -196,6 +198,12 @@ function Login({ onLogin, onGoSignup, onGoReset }) {
     <>
       <div className="auth-wrapper">
         <img src={textLogo} style={{ width: "250px" }} alt="AudifyLogo" />
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1rem', letterSpacing: '1px', textAlign: 'center' }}>
+                A music social platform where users can come together to search for songs,
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1rem', marginBottom: '30px', letterSpacing: '1px', textAlign: 'center' }}>
+                build and save playlists, and discover featured artists and their curated playlists.
+            </p>
 
         <div className="auth-card">
           <h2>Welcome Back</h2>
